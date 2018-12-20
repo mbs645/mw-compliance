@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <property name="now" value="now()" dbms="h2"/>
+
+    <property name="now" value="sysdate" dbms="oracle"/>
+
+    <property name="floatType" value="float4" dbms="postgresql, h2"/>
+    <property name="floatType" value="float" dbms="mysql, oracle, mssql"/>
+
+    <!--
+        Added the entity MwDsbmtDtl.
+    -->
+    <changeSet id="20180623074939-1" author="jhipster">
+        <createTable tableName="mw_dsbmt_dtl">
+            <column name="id" type="bigint" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="dsbmt_dtl_seq" type="bigint">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="instr_num" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="amt" type="bigint">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="pymt_mod_key" type="bigint">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="crtd_by" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="crtd_dt" type="timestamp">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="last_upd_by" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="last_upd_dt" type="timestamp">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="del_flg" type="bit">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="eff_start_dt" type="timestamp">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="eff_end_dt" type="timestamp">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="crnt_rec_flg" type="bit">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="mw_dsbmt_hdr_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+
+            <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here, do not remove-->
+        </createTable>
+        <dropDefaultValue tableName="mw_dsbmt_dtl" columnName="crtd_dt" columnDataType="datetime"/>
+        <dropDefaultValue tableName="mw_dsbmt_dtl" columnName="last_upd_dt" columnDataType="datetime"/>
+        <dropDefaultValue tableName="mw_dsbmt_dtl" columnName="eff_start_dt" columnDataType="datetime"/>
+        <dropDefaultValue tableName="mw_dsbmt_dtl" columnName="eff_end_dt" columnDataType="datetime"/>
+        
+    </changeSet>
+    <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here, do not remove-->
+</databaseChangeLog>
