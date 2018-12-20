@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <!--
+        Added the constraints for entity MwBizAprsl.
+    -->
+    <changeSet id="20180623074939-2" author="jhipster">
+        
+        <addForeignKeyConstraint baseColumnNames="mw_loan_app_id"
+                                 baseTableName="mw_biz_aprsl"
+                                 constraintName="fk_mw_biz_aprsl_mw_loan_app_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="mw_loan_App"/>
+
+    </changeSet>
+</databaseChangeLog>

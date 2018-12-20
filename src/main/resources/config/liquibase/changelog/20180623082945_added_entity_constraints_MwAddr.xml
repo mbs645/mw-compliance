@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <!--
+        Added the constraints for entity MwAddr.
+    -->
+    <changeSet id="20180623082945-2" author="jhipster">
+        
+        <addForeignKeyConstraint baseColumnNames="mw_city_id"
+                                 baseTableName="mw_addr"
+                                 constraintName="fk_mw_addr_mw_city_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="mw_city"/>
+
+        <addForeignKeyConstraint baseColumnNames="mw_cmnty_id"
+                                 baseTableName="mw_addr"
+                                 constraintName="fk_mw_addr_mw_cmnty_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="mw_cmnty"/>
+
+    </changeSet>
+</databaseChangeLog>

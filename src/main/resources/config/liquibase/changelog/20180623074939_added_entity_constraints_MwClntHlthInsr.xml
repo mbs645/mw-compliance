@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <!--
+        Added the constraints for entity MwClntHlthInsr.
+    -->
+    <changeSet id="20180623074939-2" author="jhipster">
+        
+        <addForeignKeyConstraint baseColumnNames="mw_clnt_id"
+                                 baseTableName="mw_clnt_hlth_i"
+                                 constraintName="mw_clnt_hlth_i_mw_clnt_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="mw_clnt"/>
+
+        <addForeignKeyConstraint baseColumnNames="mw_hlth_insr_plan_id"
+                                 baseTableName="mw_clnt_hlth_i"
+                                 constraintName="mw_clnt_hlth_i_mw_hlth_insr_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="mw_cmnty"/>
+
+    </changeSet>
+</databaseChangeLog>
