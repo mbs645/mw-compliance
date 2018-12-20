@@ -58,6 +58,9 @@ public class MwDthRpt implements Serializable{
 
 	@Column(name = "crnt_rec_flg")
 	private Boolean crntRecFlg;
+	
+	@Column(name = "amt")
+	private Long amt;
 
 	public Long getDthRptSeq() {
 		return dthRptSeq;
@@ -161,6 +164,14 @@ public class MwDthRpt implements Serializable{
 
 	public void setCrntRecFlg(Boolean crntRecFlg) {
 		this.crntRecFlg = crntRecFlg;
+	}
+
+	public Long getAmt() {
+		return amt;
+	}
+
+	public void setAmt(Long amt) {
+		this.amt = amt;
 	}
 	
 	

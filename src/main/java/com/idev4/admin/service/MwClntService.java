@@ -24,16 +24,34 @@ public class MwClntService {
 
 	public List<LoanServingDTO> getAllActiveClint(String user) {
 		Query query = em.createNativeQuery(
-				"select clnt.clnt_id,clnt.clnt_seq,clnt.frst_nm, clnt.last_nm,sum(app.aprvd_loan_amt) loan_amt, sum(rcv.pymt_amt) rcvd_amt,dr.dth_rpt_seq\r\n" + 
+				"select clnt.clnt_id,clnt.clnt_seq,clnt.frst_nm, clnt.last_nm,sum(app.aprvd_loan_amt) loan_amt, sum(rcv.pymt_amt) rcvd_amt,dr.dth_rpt_seq,dr.amt,brnch.brnch_seq\r\n" + 
 				"from mw_clnt clnt\r\n" + 
-				"join mw_loan_app app on app.clnt_seq=clnt.clnt_seq and app.crnt_rec_flg=1 \r\n" + 
-				"join mw_acl acl on acl.PORT_SEQ=app.PORT_SEQ and acl.USER_ID=:user\r\n" + 
+				"join mw_loan_app app on app.clnt_seq=clnt.clnt_seq and app.crnt_rec_flg=1\r\n" + 
+				"join mw_port port on port.port_seq=clnt.port_key and port.crnt_rec_flg=1  \r\n" + 
+				"join mw_brnch brnch on brnch.brnch_seq=port.brnch_seq and brnch.crnt_rec_flg=1    \r\n" + 
+				"join mw_acl acl on acl.port_seq=app.port_seq and acl.user_id=:user\r\n" + 
 				"join mw_ref_cd_val val on val.ref_cd_seq=app.loan_app_sts and val.crnt_rec_flg=1 and val.del_flg=0 and val.ref_cd ='0005'\r\n" + 
 				"join mw_ref_cd_grp grp on grp.ref_cd_grp_seq = val.ref_cd_grp_key and grp.crnt_rec_flg=1 and grp.ref_cd_grp = '0106'\r\n" + 
 				"join mw_rcvry_trx rcv on rcv.pymt_ref=clnt.clnt_seq and rcv.crnt_rec_flg = 1\r\n" + 
-				"left outer join mw_dth_rpt dr on  dr.clnt_seq=clnt.clnt_seq and dr.crnt_rec_flg=1  \r\n" + 
-				"where clnt.crnt_rec_flg=1  \r\n" + 
-				"group by clnt.clnt_id,clnt.clnt_seq,clnt.frst_nm, clnt.last_nm,dr.dth_rpt_seq").setParameter("user", user);
+				"left outer join mw_dth_rpt dr on  dr.clnt_seq=clnt.clnt_seq and dr.crnt_rec_flg=1 \r\n" + 
+				"where clnt.crnt_rec_flg=1 \r\n" + 
+				"group by clnt.clnt_id,clnt.clnt_seq,clnt.frst_nm, clnt.last_nm,dr.dth_rpt_seq,dr.amt,brnch.brnch_seq\r\n" + 
+				"minus\r\n" + 
+				"select clnt.clnt_id,clnt.clnt_seq,clnt.frst_nm, clnt.last_nm,sum(app.aprvd_loan_amt) loan_amt, sum(rcv.pymt_amt) rcvd_amt,dr.dth_rpt_seq,dr.amt,brnch.brnch_seq\r\n" + 
+				"from mw_clnt clnt\r\n" + 
+				"join mw_loan_app app on app.clnt_seq=clnt.clnt_seq and app.crnt_rec_flg=1\r\n" + 
+				"join mw_port port on port.port_seq=clnt.port_key and port.crnt_rec_flg=1  \r\n" + 
+				"join mw_brnch brnch on brnch.brnch_seq=port.brnch_seq and brnch.crnt_rec_flg=1    \r\n" + 
+				"join mw_acl acl on acl.port_seq=app.port_seq and acl.user_id=:user\r\n" + 
+				"join mw_ref_cd_val val on val.ref_cd_seq=app.loan_app_sts and val.crnt_rec_flg=1 and val.del_flg=0 and val.ref_cd ='0005'\r\n" + 
+				"join mw_ref_cd_grp grp on grp.ref_cd_grp_seq = val.ref_cd_grp_key and grp.crnt_rec_flg=1 and grp.ref_cd_grp = '0106'\r\n" + 
+				"join mw_rcvry_trx rcv on rcv.pymt_ref=clnt.clnt_seq and rcv.crnt_rec_flg = 1\r\n" + 
+				"join mw_dth_rpt dr on  dr.clnt_seq=clnt.clnt_seq and dr.crnt_rec_flg=1 \r\n" + 
+				"join Mw_Exp e on e.EXP_REF=dr.dth_rpt_seq and e.CRNT_REC_FLG=1\r\n" + 
+				"join mw_typs t on t.typ_seq = e.EXPNS_TYP_SEQ and t.crnt_rec_flg=1 and t.TYP_CTGRY_KEY=2 and t.TYP_ID='0008'\r\n" + 
+				"where clnt.crnt_rec_flg=1 \r\n" + 
+				"group by clnt.clnt_id,clnt.clnt_seq,clnt.frst_nm, clnt.last_nm,dr.dth_rpt_seq,dr.amt,brnch.brnch_seq\r\n" + 
+				"order by clnt_seq").setParameter("user", user);
 		List< Object[] > clnts = query.getResultList();
 
 		List<LoanServingDTO> dtoList = new ArrayList();
@@ -46,6 +64,8 @@ public class MwClntService {
 			dto.loanAmt=new BigDecimal( c[ 4 ].toString() ).longValue();
 			dto.rcvdAmt=new BigDecimal( c[ 5 ].toString() ).longValue();
 			dto.dthRptSeq=c[ 6 ]==null?0:new BigDecimal( c[ 6 ].toString() ).longValue();
+			dto.amt=c[ 7 ]==null?0:new BigDecimal( c[ 7 ].toString() ).longValue();
+			dto.brnchSeq= c[ 8 ]==null?0:new BigDecimal( c[ 8 ].toString() ).longValue();
 			dtoList.add(dto);
 		});
 		return dtoList;

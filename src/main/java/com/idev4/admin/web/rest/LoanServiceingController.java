@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.codahale.metrics.annotation.Timed;
 import com.idev4.admin.dto.LoanServingDTO;
+import com.idev4.admin.dto.PayFuneralCharges;
 import com.idev4.admin.dto.ReportDeathDTO;
 import com.idev4.admin.service.LoanServiceingService;
 
@@ -59,5 +60,6 @@ public class LoanServiceingController {
 	        return ResponseEntity.ok().body( resp );
 	        
 	    }
+
 
 }

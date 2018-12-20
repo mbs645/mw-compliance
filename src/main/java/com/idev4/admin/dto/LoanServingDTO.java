@@ -8,4 +8,6 @@ public String lastNm;
 public long loanAmt;
 public long rcvdAmt;
 public long dthRptSeq;
+public long amt;
+public long brnchSeq;
 }
