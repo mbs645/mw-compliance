@@ -7,6 +7,7 @@
 
 .editorconfig
 .gitattributes
+<<<<<<< HEAD
 .yo-rc.json
 README.md
 mvnw
@@ -17,6 +18,16 @@ settings.xml
 yarn.lock
 .tern-project
 
+=======
+.tern-project
+.yo-rc.json
+README.md
+settings.xml
+yarn.lock
+mvnw
+mvnw.cmd
+package.json
+>>>>>>> 128dcac1fa255a445b83e968cde2f6c0540cb36a
 
 
 
