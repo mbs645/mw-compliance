@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.EntityManager;
 import javax.persistence.Id;
 import javax.persistence.Query;
 
@@ -28,6 +29,11 @@ import com.idev4.admin.web.rest.util.Sequences;
 public class LoanServiceingService {
 	@Autowired
 	MwDthRptRepository mwDthRptRepository;
+	
+	@Autowired
+	EntityManager em;
+	
+	private final long FUNREAL_CHARGES=5000;
 
 public long addMwDthRpt(ReportDeathDTO dr,String user) {
 	long seq=SequenceFinder.findNextVal( Sequences.DTH_RPT_SEQ );
@@ -46,43 +52,29 @@ public long addMwDthRpt(ReportDeathDTO dr,String user) {
 	entity.setLastUpdDt(now);
 	entity.setDelFlg(false);
 	entity.setCrntRecFlg(true);
-	entity.setAmt(5000L);
+	entity.setAmt(payFunral(dr.clntSeq));
 	
 	return mwDthRptRepository.save(entity).getDthRptSeq();	
 	
 }
 
 
-/*public List<LoanServingDTO> payFunral(String user) {
+private long payFunral(long clntSeq) {
 	Query query = em.createNativeQuery(
-			"select clnt.clnt_id,clnt.clnt_seq,clnt.frst_nm, clnt.last_nm,sum(app.aprvd_loan_amt) loan_amt, sum(rcv.pymt_amt) rcvd_amt,dr.dth_rpt_seq\r\n" + 
-			"from mw_clnt clnt\r\n" + 
-			"join mw_loan_app app on app.clnt_seq=clnt.clnt_seq and app.crnt_rec_flg=1 \r\n" + 
-			"join mw_acl acl on acl.PORT_SEQ=app.PORT_SEQ and acl.USER_ID=:user\r\n" + 
-			"join mw_ref_cd_val val on val.ref_cd_seq=app.loan_app_sts and val.crnt_rec_flg=1 and val.del_flg=0 and val.ref_cd ='0005'\r\n" + 
-			"join mw_ref_cd_grp grp on grp.ref_cd_grp_seq = val.ref_cd_grp_key and grp.crnt_rec_flg=1 and grp.ref_cd_grp = '0106'\r\n" + 
-			"join mw_rcvry_trx rcv on rcv.pymt_ref=clnt.clnt_seq and rcv.crnt_rec_flg = 1\r\n" + 
-			"left outer join mw_dth_rpt dr on  dr.clnt_seq=clnt.clnt_seq and dr.crnt_rec_flg=1  \r\n" + 
-			"where clnt.crnt_rec_flg=1  \r\n" + 
-			"group by clnt.clnt_id,clnt.clnt_seq,clnt.frst_nm, clnt.last_nm,dr.dth_rpt_seq").setParameter("user", user);
-	List< Object[] > clnts = query.getResultList();
-
-	List<LoanServingDTO> dtoList = new ArrayList();
-	clnts.forEach(c -> {
-		LoanServingDTO dto = new LoanServingDTO();
-		dto.clntId = c[0].toString();
-		dto.clntSeq= c[1].toString();
-		dto.frstNm=c[2]==null?"":c[2].toString();
-		dto.lastNm=c[3]==null?"":c[3].toString();
-		dto.loanAmt=new BigDecimal( c[ 4 ].toString() ).longValue();
-		dto.rcvdAmt=new BigDecimal( c[ 5 ].toString() ).longValue();
-		dto.dthRptSeq=c[ 6 ]==null?0:new BigDecimal( c[ 6 ].toString() ).longValue();
-		dtoList.add(dto);
-	});
-	return dtoList;
-
+			"select sum(sum(psc.amt)-sum(rd.pymt_amt))\r\n" + 
+			"from mw_loan_app la\r\n" + 
+			"join mw_pymt_sched_hdr psh on la.loan_app_seq=psh.loan_app_seq and psh.crnt_rec_flg=1\r\n" + 
+			"join mw_pymt_sched_dtl psd on psh.pymt_sched_hdr_seq=psd.pymt_sched_hdr_seq and psd.crnt_rec_flg=1\r\n" + 
+			"join mw_pymt_sched_chrg psc on psd.pymt_sched_dtl_seq=psc.pymt_sched_dtl_seq and psc.crnt_rec_flg=1\r\n" + 
+			"left outer join mw_rcvry_dtl rd on rd.pymt_sched_dtl_seq=psd.pymt_sched_dtl_seq and rd.CHRG_TYP_KEY=psc.CHRG_TYPS_SEQ and rd.crnt_rec_flg=1\r\n" + 
+			"where la.clnt_seq=:clntSeq and la.crnt_rec_flg=1\r\n" + 
+			"group by psc.CHRG_TYPS_SEQ").setParameter("clntSeq", clntSeq);
+	 Object[] chargs = ( Object[] ) query.getSingleResult();
+	 
+	
+	return FUNREAL_CHARGES-new BigDecimal( chargs[ 0 ].toString() ).longValue();
 }
-*/
+
 
 
 
