@@ -1,3 +1,4 @@
+
 package com.idev4.admin.web.rest;
 
 import org.springframework.http.ResponseEntity;
@@ -9,21 +10,19 @@ import org.springframework.web.bind.annotation.RestController;
 import com.idev4.admin.web.rest.util.HeaderUtil;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping ( "/api" )
 public class Test {
 
-	
-	@GetMapping("/hello")
-	public ResponseEntity<String> sayHello(@RequestParam("username") String username) {
+    @GetMapping ( "/hello" )
+    public ResponseEntity< String > sayHello( @RequestParam ( "username" ) String username ) {
 
-		return ResponseEntity.ok()
-	            .headers(HeaderUtil.createEntityUpdateAlert("Test", "Hello Mr/Mrs " + username))
-	            .body("Hello World");
-	}
-	
-	@GetMapping("/test")
-	public String test() {
+        return ResponseEntity.ok().headers( HeaderUtil.createEntityUpdateAlert( "Test", "Hello Mr/Mrs " + username ) )
+                .body( "Hello World" );
+    }
 
-		return "Admin Service";
-	}
+    @GetMapping ( "/test" )
+    public String test() {
+
+        return "Admin Service";
+    }
 }

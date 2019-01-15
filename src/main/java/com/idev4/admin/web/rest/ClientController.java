@@ -1,3 +1,4 @@
+
 package com.idev4.admin.web.rest;
 
 import java.util.List;
@@ -18,14 +19,15 @@ import com.idev4.admin.service.MwClntService;
 @RestController
 @RequestMapping ( "/api" )
 public class ClientController {
-		@Autowired
-		MwClntService mwClntService;
-	
-	    @CrossOrigin
-	    @GetMapping ( "/all-active-clnts/{id}" )
-	    @Timed
-	    public ResponseEntity< List<LoanServingDTO> > allActiveClnts( @PathVariable String id  ) {
-	        return new ResponseEntity<>( mwClntService.getAllActiveClint(id), HttpStatus.OK );
-	    }
+
+    @Autowired
+    MwClntService mwClntService;
+
+    @CrossOrigin
+    @GetMapping ( "/all-active-clnts/{id}" )
+    @Timed
+    public ResponseEntity< List< LoanServingDTO > > allActiveClnts( @PathVariable String id ) {
+        return new ResponseEntity<>( mwClntService.getAllActiveClint( id ), HttpStatus.OK );
+    }
 
 }
