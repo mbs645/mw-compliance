@@ -61,8 +61,14 @@ management:
         mail:
             enabled: false # When using the MailService, configure an SMTP server and set this to true
 spring:
+    http:
+        multipart:
+            max-file-size: 10MB
+            max-request-size: 10MB
     application:
         name: adminservice
+    jmx:
+      default-domain: adminservice
     jackson:
         serialization.write_dates_as_timestamps: false
     jpa:
