@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codahale.metrics.annotation.Timed;
+import com.idev4.admin.domain.MwDthRpt;
 import com.idev4.admin.dto.ReportDeathDTO;
 import com.idev4.admin.service.LoanServiceingService;
 
@@ -26,7 +27,7 @@ public class LoanServiceingController {
     @PostMapping ( "/report-death" )
     @Timed
     public ResponseEntity< Map > allActiveClnts( @RequestBody ReportDeathDTO dr ) {
-        Map< String, String > resp = new HashMap< String, String >();
+        Map< String, Object > resp = new HashMap< String, Object >();
         String currUser = SecurityContextHolder.getContext().getAuthentication().getName();
         if ( dr.clntSeq == null || dr.clntSeq <= 0 ) {
             resp.put( "error", "Seems Incorrect Id !!" );
@@ -49,8 +50,8 @@ public class LoanServiceingController {
             return ResponseEntity.badRequest().body( resp );
         }
 
-        long expSeq = loanServiceingService.addMwDthRpt( dr, currUser );
-        resp.put( "expSeq", String.valueOf( expSeq ) );
+        MwDthRpt exp = loanServiceingService.addMwDthRpt( dr, currUser );
+        resp.put( "expSeq", exp );
         return ResponseEntity.ok().body( resp );
 
     }

@@ -15,6 +15,8 @@ public class LoanServingDTO {
 
     public long rcvdAmt;
 
+    public long sercvChrgs;
+
     public long dthRptSeq;
 
     public long amt;
@@ -22,4 +24,10 @@ public class LoanServingDTO {
     public long brnchSeq;
 
     public boolean paid;
+
+    public String prd;
+
+    public String disDate;
+
+    public long relTypFlg;
 }

@@ -104,13 +104,7 @@ jhipster:
         max-pool-size: 50
         queue-capacity: 10000
     # By default CORS is disabled. Uncomment to enable.
-    cors:
-        allowed-origins: "*"
-        allowed-methods: "*"
-        allowed-headers: "*"
-        exposed-headers: "Authorization,Link,X-Total-Count"
-        allow-credentials: true
-        max-age: 2800
+   
     mail:
         from: adminservice@localhost
     swagger:

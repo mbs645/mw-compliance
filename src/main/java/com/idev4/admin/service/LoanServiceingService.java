@@ -30,7 +30,7 @@ public class LoanServiceingService {
 
     private final long FUNREAL_CHARGES = 5000;
 
-    public long addMwDthRpt( ReportDeathDTO dr, String user ) {
+    public MwDthRpt addMwDthRpt( ReportDeathDTO dr, String user ) {
         long seq = SequenceFinder.findNextVal( Sequences.DTH_RPT_SEQ );
         MwDthRpt entity = new MwDthRpt();
         Instant now = Instant.now();
@@ -49,7 +49,7 @@ public class LoanServiceingService {
         entity.setCrntRecFlg( true );
         entity.setAmt( payFunral( dr.clntSeq ) );
 
-        return mwDthRptRepository.save( entity ).getDthRptSeq();
+        return mwDthRptRepository.save( entity );
 
     }
 

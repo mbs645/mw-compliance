@@ -1,3 +1,4 @@
+
 package com.idev4.admin.domain;
 
 import java.io.Serializable;
@@ -11,171 +12,176 @@ import javax.persistence.Table;
 
 import com.idev4.admin.ids.MwDthRptId;
 
-
 @Entity
 @Table ( name = "mw_dth_rpt" )
 @IdClass ( MwDthRptId.class )
-public class MwDthRpt implements Serializable{
-	 private static final long serialVersionUID = 1L;
-	
-	@Id
-	@Column(name = "dth_rpt_seq")
-	private Long dthRptSeq;
+public class MwDthRpt implements Serializable {
 
-	@Column(name = "clnt_seq")
-	private Long clntSeq;
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	@Column(name = "eff_start_dt")
-	private Instant effStartDt;
+    @Id
+    @Column ( name = "dth_rpt_seq" )
+    private Long dthRptSeq;
 
-	@Column(name = "clnt_nom_flg")
-	private Integer clntNomFlg;
+    @Column ( name = "clnt_seq" )
+    private Long clntSeq;
 
-	@Column(name = "dt_of_dth")
-	private Instant dtOfDth;
+    @Id
+    @Column ( name = "eff_start_dt" )
+    private Instant effStartDt;
 
-	@Column(name = "cause_of_dth")
-	private String causeOfDth;
+    @Column ( name = "clnt_nom_flg" )
+    private Integer clntNomFlg;
 
-	@Column(name = "dth_cert_num")
-	private String dthCertNum;
+    @Column ( name = "dt_of_dth" )
+    private Instant dtOfDth;
 
-	@Column(name = "crtd_by")
-	private String crtdBy;
+    @Column ( name = "cause_of_dth" )
+    private String causeOfDth;
 
-	@Column(name = "crtd_dt")
-	private Instant crtdDt;
+    @Column ( name = "dth_cert_num" )
+    private String dthCertNum;
 
-	@Column(name = "last_upd_by")
-	private String lastUpdBy;
+    @Column ( name = "crtd_by" )
+    private String crtdBy;
 
-	@Column(name = "last_upd_dt")
-	private Instant lastUpdDt;
+    @Column ( name = "crtd_dt" )
+    private Instant crtdDt;
 
-	@Column(name = "del_flg")
-	private Boolean delFlg;
+    @Column ( name = "last_upd_by" )
+    private String lastUpdBy;
 
-	@Column(name = "crnt_rec_flg")
-	private Boolean crntRecFlg;
-	
-	@Column(name = "amt")
-	private Long amt;
+    @Column ( name = "last_upd_dt" )
+    private Instant lastUpdDt;
 
-	public Long getDthRptSeq() {
-		return dthRptSeq;
-	}
+    @Column ( name = "del_flg" )
+    private Boolean delFlg;
 
-	public void setDthRptSeq(Long dthRptSeq) {
-		this.dthRptSeq = dthRptSeq;
-	}
+    @Column ( name = "crnt_rec_flg" )
+    private Boolean crntRecFlg;
 
-	public Long getClntSeq() {
-		return clntSeq;
-	}
+    @Column ( name = "amt" )
+    private Long amt;
 
-	public void setClntSeq(Long clntSeq) {
-		this.clntSeq = clntSeq;
-	}
+    public Long getDthRptSeq() {
+        return dthRptSeq;
+    }
 
-	public Instant getEffStartDt() {
-		return effStartDt;
-	}
+    public void setDthRptSeq( Long dthRptSeq ) {
+        this.dthRptSeq = dthRptSeq;
+    }
 
-	public void setEffStartDt(Instant effStartDt) {
-		this.effStartDt = effStartDt;
-	}
+    public Long getClntSeq() {
+        return clntSeq;
+    }
 
-	public Integer getClntNomFlg() {
-		return clntNomFlg;
-	}
+    public void setClntSeq( Long clntSeq ) {
+        this.clntSeq = clntSeq;
+    }
 
-	public void setClntNomFlg(Integer clntNomFlg) {
-		this.clntNomFlg = clntNomFlg;
-	}
+    public Instant getEffStartDt() {
+        return effStartDt;
+    }
 
-	public Instant getDtOfDth() {
-		return dtOfDth;
-	}
+    public void setEffStartDt( Instant effStartDt ) {
+        this.effStartDt = effStartDt;
+    }
 
-	public void setDtOfDth(Instant dtOfDth) {
-		this.dtOfDth = dtOfDth;
-	}
+    public Integer getClntNomFlg() {
+        return clntNomFlg;
+    }
 
-	public String getCauseOfDth() {
-		return causeOfDth;
-	}
+    public void setClntNomFlg( Integer clntNomFlg ) {
+        this.clntNomFlg = clntNomFlg;
+    }
 
-	public void setCauseOfDth(String causeOfDth) {
-		this.causeOfDth = causeOfDth;
-	}
+    public Instant getDtOfDth() {
+        return dtOfDth;
+    }
 
-	public String getDthCertNum() {
-		return dthCertNum;
-	}
+    public void setDtOfDth( Instant dtOfDth ) {
+        this.dtOfDth = dtOfDth;
+    }
 
-	public void setDthCertNum(String dthCertNum) {
-		this.dthCertNum = dthCertNum;
-	}
+    public String getCauseOfDth() {
+        return causeOfDth;
+    }
 
-	public String getCrtdBy() {
-		return crtdBy;
-	}
+    public void setCauseOfDth( String causeOfDth ) {
+        this.causeOfDth = causeOfDth;
+    }
 
-	public void setCrtdBy(String crtdBy) {
-		this.crtdBy = crtdBy;
-	}
+    public String getDthCertNum() {
+        return dthCertNum;
+    }
 
-	public Instant getCrtdDt() {
-		return crtdDt;
-	}
+    public void setDthCertNum( String dthCertNum ) {
+        this.dthCertNum = dthCertNum;
+    }
 
-	public void setCrtdDt(Instant crtdDt) {
-		this.crtdDt = crtdDt;
-	}
+    public String getCrtdBy() {
+        return crtdBy;
+    }
 
-	public String getLastUpdBy() {
-		return lastUpdBy;
-	}
+    public void setCrtdBy( String crtdBy ) {
+        this.crtdBy = crtdBy;
+    }
 
-	public void setLastUpdBy(String lastUpdBy) {
-		this.lastUpdBy = lastUpdBy;
-	}
+    public Instant getCrtdDt() {
+        return crtdDt;
+    }
 
-	public Instant getLastUpdDt() {
-		return lastUpdDt;
-	}
+    public void setCrtdDt( Instant crtdDt ) {
+        this.crtdDt = crtdDt;
+    }
 
-	public void setLastUpdDt(Instant lastUpdDt) {
-		this.lastUpdDt = lastUpdDt;
-	}
+    public String getLastUpdBy() {
+        return lastUpdBy;
+    }
 
-	public Boolean getDelFlg() {
-		return delFlg;
-	}
+    public void setLastUpdBy( String lastUpdBy ) {
+        this.lastUpdBy = lastUpdBy;
+    }
 
-	public void setDelFlg(Boolean delFlg) {
-		this.delFlg = delFlg;
-	}
+    public Instant getLastUpdDt() {
+        return lastUpdDt;
+    }
 
-	public Boolean getCrntRecFlg() {
-		return crntRecFlg;
-	}
+    public void setLastUpdDt( Instant lastUpdDt ) {
+        this.lastUpdDt = lastUpdDt;
+    }
 
-	public void setCrntRecFlg(Boolean crntRecFlg) {
-		this.crntRecFlg = crntRecFlg;
-	}
+    public Boolean getDelFlg() {
+        return delFlg;
+    }
 
-	public Long getAmt() {
-		return amt;
-	}
+    public void setDelFlg( Boolean delFlg ) {
+        this.delFlg = delFlg;
+    }
 
-	public void setAmt(Long amt) {
-		this.amt = amt;
-	}
-	
-	
-	
-	
+    public Boolean getCrntRecFlg() {
+        return crntRecFlg;
+    }
 
+    public void setCrntRecFlg( Boolean crntRecFlg ) {
+        this.crntRecFlg = crntRecFlg;
+    }
+
+    public Long getAmt() {
+        return amt;
+    }
+
+    public void setAmt( Long amt ) {
+        this.amt = amt;
+    }
+
+    @Override
+    public String toString() {
+        try {
+            return new com.fasterxml.jackson.databind.ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString( this );
+        } catch ( com.fasterxml.jackson.core.JsonProcessingException e ) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

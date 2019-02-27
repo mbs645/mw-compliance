@@ -39,9 +39,9 @@ spring:
         serialization.indent_output: true
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        url: jdbc:oracle:thin:@103.31.82.14:1521:mwdev
-        username: newmw
-        password: newmw
+        url: jdbc:oracle:thin:@103.31.82.146:1521:homw
+        username: mwdev
+        password: mwdev
     jpa:
         database-platform: org.hibernate.dialect.Oracle12cDialect
         database: ORACLE
