@@ -27,19 +27,19 @@ public class MwClntService {
     EntityManager em;
 
     public List< LoanServingDTO > getAllActiveClint( String user ) {
-        Query query = em.createNativeQuery( "SELECT clnt_id,\r\n" + "         clnt_seq,\r\n" + "         frst_nm,\r\n"
+        Query query = em.createNativeQuery( "  SELECT clnt_id,\r\n" + "         clnt_seq,\r\n" + "         frst_nm,\r\n"
                 + "         last_nm,\r\n" + "         SUM (ppal_amt_due),\r\n" + "         SUM (tot_chrg_due),\r\n"
-                + "         max (rcvd_amt),\r\n" + "         dth_rpt_seq,\r\n" + "         MAX (amt),\r\n" + "         brnch_seq,\r\n"
+                + "         MAX (rcvd_amt),\r\n" + "         dth_rpt_seq,\r\n" + "         MAX (amt),\r\n" + "         brnch_seq,\r\n"
                 + "         exp_seq,\r\n" + "         LISTAGG (prd_cmnt, ',') WITHIN GROUP (ORDER BY clnt_seq)     prd_cmnt,\r\n"
-                + "         loan_app_sts_dt,\r\n" + "         rel_typ_flg\r\n" + "    FROM (  SELECT clnt.clnt_id,\r\n"
+                + "         loan_app_sts_dt,\r\n" + "         rel_typ_flg,post_flg\r\n" + "    FROM (  SELECT clnt.clnt_id,\r\n"
                 + "                   clnt.clnt_seq,\r\n" + "                   clnt.frst_nm,\r\n" + "                   clnt.last_nm,\r\n"
-                + "                   SUM (ppal_amt_due)\r\n" + "                       ppal_amt_due,\r\n"
-                + "                   SUM (tot_chrg_due)\r\n" + "                       tot_chrg_due,\r\n"
-                + "                   max (rcvry_amt) rcvd_amt,\r\n" + "                   dr.dth_rpt_seq,\r\n"
-                + "                   MAX (dr.amt)\r\n" + "                       amt,\r\n" + "                   brnch.brnch_seq,\r\n"
+                + "                   SUM (ppal_amt_due)              ppal_amt_due,\r\n"
+                + "                   SUM (tot_chrg_due)              tot_chrg_due,\r\n"
+                + "                   MAX (rcvry_amt)                 rcvd_amt,\r\n" + "                   dr.dth_rpt_seq,\r\n"
+                + "                   MAX (dr.amt)                    amt,\r\n" + "                   brnch.brnch_seq,\r\n"
                 + "                   e.exp_seq,\r\n" + "                   prd_cmnt,\r\n"
-                + "                   TRUNC (app.loan_app_sts_dt)\r\n" + "                       loan_app_sts_dt,\r\n"
-                + "                   rel.rel_typ_flg\r\n" + "              FROM mw_clnt clnt\r\n"
+                + "                   TRUNC (app.loan_app_sts_dt)     loan_app_sts_dt,\r\n"
+                + "                   rel.rel_typ_flg,e.post_flg\r\n" + "              FROM mw_clnt clnt\r\n"
                 + "                   JOIN mw_loan_app app\r\n"
                 + "                       ON app.clnt_seq = clnt.clnt_seq AND app.crnt_rec_flg = 1\r\n"
                 + "                   JOIN mw_pymt_sched_hdr psh\r\n"
@@ -57,12 +57,14 @@ public class MwClntService {
                 + "                       ON port.port_seq = clnt.port_key AND port.crnt_rec_flg = 1\r\n"
                 + "                   JOIN mw_brnch brnch\r\n" + "                       ON     brnch.brnch_seq = port.brnch_seq\r\n"
                 + "                          AND brnch.crnt_rec_flg = 1\r\n" + "                   JOIN mw_acl acl\r\n"
-                + "                       ON acl.port_seq = app.port_seq AND acl.user_id =:user\r\n"
-                + "                   left outer join (SELECT pymt_ref clnt_seq,SUM(pymt_amt) rcvry_amt FROM mw_rcvry_trx WHERE crnt_rec_flg = 1 group by pymt_ref) rcvry on\r\n"
-                + "                          rcvry.clnt_seq=clnt.clnt_seq\r\n" + "                   LEFT OUTER JOIN mw_dth_rpt dr\r\n"
-                + "                       ON dr.clnt_seq = clnt.clnt_seq AND dr.crnt_rec_flg = 1 and dr.crtd_dt>app.crtd_dt\r\n"
-                + "                   LEFT OUTER JOIN mw_exp e\r\n"
-                + "                       ON e.exp_ref = clnt.clnt_seq AND e.crnt_rec_flg = 1  and e.CRTD_DT>app.CRTD_DT\r\n"
+                + "                       ON     acl.port_seq = app.port_seq\r\n" + "                          AND acl.user_id = :user\r\n"
+                + "                   LEFT OUTER JOIN\r\n" + "                   (  SELECT pymt_ref clnt_seq, SUM (pymt_amt) rcvry_amt\r\n"
+                + "                        FROM mw_rcvry_trx\r\n" + "                       WHERE crnt_rec_flg = 1\r\n"
+                + "                    GROUP BY pymt_ref) rcvry\r\n" + "                       ON rcvry.clnt_seq = clnt.clnt_seq\r\n"
+                + "                   LEFT OUTER JOIN mw_dth_rpt dr\r\n" + "                       ON     dr.clnt_seq = clnt.clnt_seq\r\n"
+                + "                          AND dr.crnt_rec_flg = 1\r\n" + "                          AND dr.crtd_dt > app.crtd_dt\r\n"
+                + "                   LEFT OUTER JOIN mw_exp e\r\n" + "                       ON     e.exp_ref = clnt.clnt_seq\r\n"
+                + "                          AND e.crnt_rec_flg = 1\r\n" + "                          AND e.CRTD_DT > app.CRTD_DT\r\n"
                 + "                   LEFT OUTER JOIN mw_clnt_rel rel\r\n"
                 + "                       ON     rel.loan_app_seq = app.prnt_loan_app_seq\r\n"
                 + "                          AND rel.crnt_rec_flg = 1\r\n" + "                          AND rel.rel_typ_flg = 1\r\n"
@@ -70,9 +72,10 @@ public class MwClntService {
                 + "                   clnt.clnt_seq,\r\n" + "                   clnt.frst_nm,\r\n" + "                   clnt.last_nm,\r\n"
                 + "                   dr.dth_rpt_seq,\r\n" + "                   brnch.brnch_seq,\r\n" + "                   e.exp_seq,\r\n"
                 + "                   prd_cmnt,\r\n" + "                   TRUNC (app.loan_app_sts_dt),\r\n"
-                + "                   rel.rel_typ_flg)\r\n" + "GROUP BY clnt_id,\r\n" + "         clnt_seq,\r\n" + "         frst_nm,\r\n"
-                + "         last_nm,\r\n" + "         dth_rpt_seq,\r\n" + "         brnch_seq,\r\n" + "         exp_seq,\r\n"
-                + "         loan_app_sts_dt,\r\n" + "         rel_typ_flg" ).setParameter( "user", user );
+                + "                   rel.rel_typ_flg,e.post_flg)\r\n" + "GROUP BY clnt_id,\r\n" + "         clnt_seq,\r\n"
+                + "         frst_nm,\r\n" + "         last_nm,\r\n" + "         dth_rpt_seq,\r\n" + "         brnch_seq,\r\n"
+                + "         exp_seq,\r\n" + "         loan_app_sts_dt,\r\n" + "         rel_typ_flg,post_flg" )
+                .setParameter( "user", user );
         List< Object[] > clnts = query.getResultList();
 
         List< LoanServingDTO > dtoList = new ArrayList();
@@ -92,6 +95,8 @@ public class MwClntService {
             dto.prd = c[ 11 ] == null ? "" : c[ 11 ].toString();
             dto.disDate = c[ 12 ] == null ? "" : c[ 12 ].toString();
             dto.relTypFlg = c[ 13 ] == null ? 0 : new BigDecimal( c[ 13 ].toString() ).longValue();
+            dto.post = c[ 14 ] == null ? false : true;
+            ;
             dtoList.add( dto );
         } );
         return dtoList;

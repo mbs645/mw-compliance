@@ -30,4 +30,6 @@ public class LoanServingDTO {
     public String disDate;
 
     public long relTypFlg;
+
+    public boolean post;
 }
