@@ -40,8 +40,8 @@ spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
         url: jdbc:oracle:thin:@103.31.82.146:1521:homw
-        username: mwdev
-        password: mwdev
+        username: mwqa
+        password: mwqa
     jpa:
         database-platform: org.hibernate.dialect.Oracle12cDialect
         database: ORACLE
