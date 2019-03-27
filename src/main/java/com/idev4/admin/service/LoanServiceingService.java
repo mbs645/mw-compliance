@@ -28,9 +28,12 @@ public class LoanServiceingService {
     @Autowired
     EntityManager em;
 
+    @Autowired
+    ServiceClient serviceClient;
+
     private final long FUNREAL_CHARGES = 5000;
 
-    public MwDthRpt addMwDthRpt( ReportDeathDTO dr, String user ) {
+    public MwDthRpt addMwDthRpt( ReportDeathDTO dr, String user, String token ) {
         long seq = SequenceFinder.findNextVal( Sequences.DTH_RPT_SEQ );
         MwDthRpt entity = new MwDthRpt();
         Instant now = Instant.now();
@@ -48,7 +51,7 @@ public class LoanServiceingService {
         entity.setDelFlg( false );
         entity.setCrntRecFlg( true );
         entity.setAmt( payFunral( dr.clntSeq ) );
-
+        serviceClient.reverseAdvanceRecoveries( dr.clntSeq, token );
         return mwDthRptRepository.save( entity );
 
     }

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,7 +27,7 @@ public class LoanServiceingController {
 
     @PostMapping ( "/report-death" )
     @Timed
-    public ResponseEntity< Map > allActiveClnts( @RequestBody ReportDeathDTO dr ) {
+    public ResponseEntity< Map > allActiveClnts( @RequestBody ReportDeathDTO dr, @RequestHeader ( value = "Authorization" ) String token ) {
         Map< String, Object > resp = new HashMap< String, Object >();
         String currUser = SecurityContextHolder.getContext().getAuthentication().getName();
         if ( dr.clntSeq == null || dr.clntSeq <= 0 ) {
@@ -50,7 +51,7 @@ public class LoanServiceingController {
             return ResponseEntity.badRequest().body( resp );
         }
 
-        MwDthRpt exp = loanServiceingService.addMwDthRpt( dr, currUser );
+        MwDthRpt exp = loanServiceingService.addMwDthRpt( dr, currUser, token );
         resp.put( "expSeq", exp );
         return ResponseEntity.ok().body( resp );
 
