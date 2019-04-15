@@ -8,7 +8,7 @@
     <packaging>war</packaging>
     <name>Adminservice</name>
 
-    <!-- more information at https://blogs.oracle.com/dev2dev/entry/how_to_get_oracle_jdbc -->
+    <!-- test more information at https://blogs.oracle.com/dev2dev/entry/how_to_get_oracle_jdbc -->
     <repositories>
         <repository>
             <id>maven.oracle.com</id>
