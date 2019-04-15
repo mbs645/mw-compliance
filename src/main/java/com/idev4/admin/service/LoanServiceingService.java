@@ -2,10 +2,8 @@
 package com.idev4.admin.service;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Date;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -31,6 +29,9 @@ public class LoanServiceingService {
     @Autowired
     ServiceClient serviceClient;
 
+    @Autowired
+    Utils utils;
+
     private final long FUNREAL_CHARGES = 5000;
 
     public MwDthRpt addMwDthRpt( ReportDeathDTO dr, String user, String token ) {
@@ -41,7 +42,7 @@ public class LoanServiceingService {
         entity.setClntSeq( dr.clntSeq );
         entity.setEffStartDt( now );
         entity.setClntNomFlg( dr.gender );
-        entity.setDtOfDth( parseStringDate( dr.deathDt ) );
+        entity.setDtOfDth( utils.parseStringDateToInstant( dr.deathDt ) );
         entity.setCauseOfDth( dr.dethCase );
         entity.setDthCertNum( dr.deathcertf );
         entity.setCrtdBy( user );
@@ -51,7 +52,8 @@ public class LoanServiceingService {
         entity.setDelFlg( false );
         entity.setCrntRecFlg( true );
         entity.setAmt( payFunral( dr.clntSeq ) );
-        serviceClient.reverseAdvanceRecoveries( dr.clntSeq, token );
+        String date = new SimpleDateFormat( "dd-MM-yyyy" ).format( utils.parseStringDateToDate( dr.deathDt ) );
+        serviceClient.reverseAdvanceRecoveries( dr.clntSeq, date, token );
         return mwDthRptRepository.save( entity );
 
     }
@@ -67,16 +69,6 @@ public class LoanServiceingService {
         Object chargs = query.getSingleResult();
 
         return FUNREAL_CHARGES - ( chargs == null ? 0 : new BigDecimal( chargs.toString() ).longValue() );
-    }
-
-    private Instant parseStringDate( String input ) {
-        Date date = null;
-        try {
-            date = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" ).parse( input );
-        } catch ( ParseException e ) {
-            System.out.println( e );
-        }
-        return date.toInstant();
     }
 
 }
