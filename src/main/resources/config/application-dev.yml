@@ -39,9 +39,9 @@ spring:
         serialization.indent_output: true
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        url: jdbc:oracle:thin:@103.31.82.146:1521:homw
-        username: mwqa
-        password: mwqa
+        url: jdbc:oracle:thin:@192.168.7.42:1521:homw
+        username: newmw1
+        password: newmw1
     jpa:
         database-platform: org.hibernate.dialect.Oracle12cDialect
         database: ORACLE
@@ -72,7 +72,7 @@ liquibase:
 
 # ===================================================================
 # To enable SSL, generate a certificate using:
-# keytool -genkey -alias adminservice -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore keystore.p12 -validity 3650
+# keytool -genkey -alias complianceservice -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore keystore.p12 -validity 3650
 #
 # You can also use Let's Encrypt:
 # https://maximilian-boehm.com/hp2121/Create-a-Java-Keystore-JKS-from-Let-s-Encrypt-Certificates.htm
@@ -85,10 +85,10 @@ liquibase:
 #        key-store: keystore.p12
 #        key-store-password: <your-password>
 #        key-store-type: PKCS12
-#        key-alias: adminservice
+#        key-alias: complianceservice
 # ===================================================================
 server:
-    port: 8484
+    port: 8686
 
 # ===================================================================
 # JHipster specific properties
@@ -116,15 +116,15 @@ jhipster:
                 token-validity-in-seconds: 86400
                 token-validity-in-seconds-for-remember-me: 2592000
     mail: # specific JHipster mail property, for standard properties see MailProperties
-        from: adminservice@localhost
-        base-url: http://127.0.0.1:8484
+        from: complianceservice@localhost
+        base-url: http://127.0.0.1:8686
     metrics: # DropWizard Metrics configuration, used by MetricsConfiguration
         jmx.enabled: true
         graphite: # Use the "graphite" Maven profile to have the Graphite dependencies
             enabled: false
             host: localhost
             port: 2003
-            prefix: adminservice
+            prefix: complianceservice
         prometheus: # Use the "prometheus" Maven profile to have the Prometheus dependencies
             enabled: false
             endpoint: /prometheusMetrics

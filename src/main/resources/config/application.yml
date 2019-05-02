@@ -24,8 +24,8 @@ eureka:
         instance-info-replication-interval-seconds: 10
         registry-fetch-interval-seconds: 10
     instance:
-        appname: adminservice
-        instanceId: adminservice:${spring.application.instance-id:${random.value}}
+        appname: complianceservice
+        instanceId: complianceservice:${spring.application.instance-id:${random.value}}
         lease-renewal-interval-in-seconds: 5
         lease-expiration-duration-in-seconds: 10
         status-page-url-path: ${management.context-path}/info
@@ -66,9 +66,9 @@ spring:
             max-file-size: 10MB
             max-request-size: 10MB
     application:
-        name: adminservice
+        name: complianceservice
     jmx:
-      default-domain: adminservice
+      default-domain: complianceservice
     jackson:
         serialization.write_dates_as_timestamps: false
     jpa:
@@ -112,11 +112,11 @@ jhipster:
     # By default CORS is disabled. Uncomment to enable.
    
     mail:
-        from: adminservice@localhost
+        from: complianceservice@localhost
     swagger:
         default-include-pattern: /api/.*
-        title: adminservice API
-        description: adminservice API documentation
+        title: complianceservice API
+        description: complianceservice API documentation
         version: 0.0.1
         terms-of-service-url:
         contact-name:
