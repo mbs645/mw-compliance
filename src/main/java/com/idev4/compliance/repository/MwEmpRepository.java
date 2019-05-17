@@ -20,4 +20,6 @@ public interface MwEmpRepository extends JpaRepository< MwEmp, Long > {
     public MwEmp findOneByEmpNmContaining( String chars );
 
     public MwEmp findOneByEmpSeq( Long seq );
+    
+    public MwEmp findOneByEmpLanId(String lanId);
 }

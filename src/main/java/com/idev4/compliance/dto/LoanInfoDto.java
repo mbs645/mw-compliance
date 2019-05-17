@@ -41,4 +41,5 @@ public class LoanInfoDto {
 	public String instNum;
 	public String dsbmtDt;
 	public String cmpltDt;
+	public String prdId;
 }

@@ -43,19 +43,19 @@ public class Queries {
 			"       dsbmt.pybl_amt,\r\n" + 
 			"       dsbmt.inst_num,\r\n" + 
 			"       dsbmt.dsbmt_dt,\r\n" + 
-			"       dsbmt.cmplt_dt\r\n" + 
-			"       \r\n" + 
+			"       dsbmt.cmplt_dt ,\r\n" + 
+			"       pg.prd_grp_id prd_id   \r\n" + 
 			"from mw_loan_app ap\r\n" + 
-			"join mw_port prt on prt.port_seq = ap.port_seq and prt.crnt_rec_flg=1 and prt.brnch_seq=98\r\n" + 
+			"join mw_port prt on prt.port_seq = ap.port_seq and prt.crnt_rec_flg=1 and prt.brnch_seq=98 \r\n" + 
 			"join mw_clnt clnt on clnt.clnt_seq=ap.clnt_seq and clnt.crnt_rec_flg=1\r\n" + 
 			"join mw_ref_cd_val msts on msts.ref_cd_seq=clnt.mrtl_sts_key and msts.crnt_rec_flg=1\r\n" + 
 			"join mw_ref_cd_val occ on occ.ref_cd_seq=clnt.occ_key and occ.crnt_rec_flg=1\r\n" + 
 			"join mw_ref_cd_val res on res.ref_cd_seq=clnt.res_typ_key and res.crnt_rec_flg=1\r\n" + 
 			"join mw_ref_cd_val gndr on gndr.ref_cd_seq=clnt.gndr_key and gndr.crnt_rec_flg=1\r\n" + 
 			"join mw_addr_rel adrl on adrl.enty_key=clnt.clnt_seq and adrl.enty_typ='Client' and adrl.crnt_rec_flg=1\r\n" + 
-			"join mw_port prt on prt.port_seq=ap.port_seq and prt.crnt_rec_flg=1\r\n" + 
 			"join mw_prd prd on prd.prd_seq=ap.prd_seq and prd.crnt_rec_flg=1\r\n" + 
-			"left outer join (select hlth.loan_app_seq,pln.plan_nm from mw_clnt_hlth_insr hlth join mw_hlth_insr_plan pln on pln.hlth_insr_plan_seq=hlth.hlth_insr_plan_seq where hlth.crnt_rec_flg=1) pln on pln.loan_app_seq=ap.loan_app_seq\r\n" + 
+			"join mw_prd_grp pg on pg.prd_grp_seq=prd.prd_grp_seq and pg.crnt_rec_flg=1\r\n" + 
+			"left outer join (select hlth.loan_app_seq,pln.plan_nm from mw_clnt_hlth_insr hlth join mw_hlth_insr_plan pln on pln.hlth_insr_plan_seq=hlth.hlth_insr_plan_seq and pln.crnt_rec_flg=1 where hlth.crnt_rec_flg=1) pln on pln.loan_app_seq=ap.loan_app_seq\r\n" + 
 			"-- address\r\n" + 
 			"join (\r\n" + 
 			"    select adrl.enty_key clnt_seq,\r\n" + 
@@ -67,6 +67,7 @@ public class Queries {
 			"    join mw_city_uc_rel crl on crl.city_uc_rel_seq=adr.city_seq and crl.crnt_rec_flg=1\r\n" + 
 			"    join mw_city city on city.city_seq=crl.city_seq and city.crnt_rec_flg=1    \r\n" + 
 			"    where enty_typ='Client' \r\n" + 
+			"      --and enty_key=9800000082\r\n" + 
 			"      and adrl.crnt_rec_flg=1\r\n" + 
 			") addr on addr.clnt_seq=clnt.clnt_seq\r\n" + 
 			"join (\r\n" + 
@@ -173,4 +174,19 @@ public class Queries {
 			"        where ba.crnt_rec_flg=1\r\n" + 
 			") saprsl on saprsl.loan_app_seq=ap.loan_app_seq\r\n" + 
 			"where ap.crnt_rec_flg=1";
+	
+	
+	public static String complianceLandingQuery = "SELECT\r\n" + 
+			"   brnch.brnch_seq, brnch.brnch_cd,brnch.brnch_nm, trgt.trgt, (select count(1) from mw_adt_vst vst join mw_ref_cd_val val on val.ref_cd_seq=vst.VISIT_STS_KEY and val.ref_cd='01385' and val.crnt_rec_flg=1 where vst.brnch_seq=trgt.brnch_seq and vst.crnt_rec_flg=1) as completed_visits\r\n" + 
+			" FROM\r\n" + 
+			"    mw_adt_trgt trgt\r\n" + 
+			"    JOIN mw_brnch brnch ON brnch.brnch_seq = trgt.brnch_seq\r\n" + 
+			"                           AND brnch.crnt_rec_flg = 1";
+	
+	
+	public static String adtSrvy = "select (select qst.qst_str from mw_qst qst where qst.qst_seq=srvy.qst_seq and qst.crnt_rec_flg=1) as qst_str,(select ans.answr_str from mw_answr ans where ans.answr_seq = srvy.answr_seq and ans.crnt_rec_flg=1) as answr,clnt.frst_nm,clnt.last_nm,app.loan_id from MW_ADT_VST_SRVY srvy\r\n" + 
+			"join mw_loan_app app on app.loan_app_seq= srvy.enty_seq and app.crnt_rec_flg=1\r\n" + 
+			"join mw_clnt clnt on clnt.clnt_seq= app.clnt_seq\r\n" + 
+			"where srvy.crnt_rec_flg=1\r\n" + 
+			"and srvy.adt_vst_seq=";
 }

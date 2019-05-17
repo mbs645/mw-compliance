@@ -2,6 +2,7 @@ package com.idev4.compliance.dto;
 
 import java.util.List;
 
+import com.idev4.compliance.domain.MwAdtVst;
 import com.idev4.compliance.domain.MwAnswr;
 import com.idev4.compliance.domain.MwBrnch;
 import com.idev4.compliance.domain.MwEmp;
@@ -17,5 +18,5 @@ public class TabDto {
 	public List<MwQstnr> mw_qstnr;
 	public List<MwQst> mw_qst;
 	public List<MwRefCdVal> mw_ref_cd_val;
-	
+	public List<MwAdtVst> mw_adt_vst;
 }

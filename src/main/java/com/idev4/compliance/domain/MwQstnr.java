@@ -16,7 +16,7 @@ public class MwQstnr implements Serializable {
 
     @Id
     @Column(name = "qstnr_seq")
-    private long qstnrSeq;
+    private Long qstnrSeq;
 
     @Column(name = "qstnr_nm")
     private String qstnrNm;
@@ -25,7 +25,7 @@ public class MwQstnr implements Serializable {
     private String qstnrId;
 
     @Column(name = "qstnr_sts_key")
-    private long qstnrStsKey;
+    private Long qstnrStsKey;
         
     @Column(name = "crtd_by")
     private String crtdBy;
@@ -52,7 +52,16 @@ public class MwQstnr implements Serializable {
     @Column(name = "crnt_rec_flg")
     private Boolean crntRecFlg;
 
-	public long getQstnrSeq() {
+    @Column(name = "QSTNR_CTGRY_KEY")
+    private Long qstnrCtgryKey;
+    
+    @Column(name = "QSTNR_LVL_KEY")
+    private Long qstnrLvlKey;
+    
+    @Column(name = "QSTNR_RUL")
+    private String qstnrRul;
+    
+	public Long getQstnrSeq() {
 		return qstnrSeq;
 	}
 
@@ -80,7 +89,7 @@ public class MwQstnr implements Serializable {
 		return qstnrStsKey;
 	}
 
-	public void setQstnrStsKey(long qstnrStsKey) {
+	public void setQstnrStsKey(Long qstnrStsKey) {
 		this.qstnrStsKey = qstnrStsKey;
 	}
 
@@ -146,5 +155,33 @@ public class MwQstnr implements Serializable {
 
 	public void setCrntRecFlg(Boolean crntRecFlg) {
 		this.crntRecFlg = crntRecFlg;
+	}
+
+	public Long getQstnrCtgryKey() {
+		return qstnrCtgryKey;
+	}
+
+	public void setQstnrCtgryKey(Long qstnrCtgryKey) {
+		this.qstnrCtgryKey = qstnrCtgryKey;
+	}
+
+	public Long getQstnrLvlKey() {
+		return qstnrLvlKey;
+	}
+
+	public void setQstnrLvlKey(Long qstnrLvlKey) {
+		this.qstnrLvlKey = qstnrLvlKey;
+	}
+
+	public void setQstnrSeq(Long qstnrSeq) {
+		this.qstnrSeq = qstnrSeq;
+	}
+
+	public String getQstnrRul() {
+		return qstnrRul;
+	}
+
+	public void setQstnrRul(String qstnrRul) {
+		this.qstnrRul = qstnrRul;
 	}
 }
