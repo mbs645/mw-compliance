@@ -4,15 +4,11 @@ package com.idev4.compliance.ids;
 import java.io.Serializable;
 import java.time.Instant;
 
-/**
- * A MwBrnch.
- */
-
-public class MwAdtTrgtId implements Serializable {
+public class MwAdtCtgryId implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Long adtTrgtSeq;
+    public Long adtCtgrySeq;
 
     public Instant effStartDt;
 }
