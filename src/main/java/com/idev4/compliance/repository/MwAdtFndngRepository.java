@@ -17,5 +17,7 @@ import com.idev4.compliance.domain.MwAdtFndng;
 public interface MwAdtFndngRepository extends JpaRepository< MwAdtFndng, Long > {
 	
 	public MwAdtFndng findOneByAdtFndngSeqAndCrntRecFlg(Long seq, boolean flag);
+	public List<MwAdtFndng> findAllByAdtVstSeqAndCrntRecFlg(Long seq, boolean flag);
+
 	
 }

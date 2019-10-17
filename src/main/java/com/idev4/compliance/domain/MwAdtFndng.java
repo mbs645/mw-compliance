@@ -61,6 +61,39 @@ public class MwAdtFndng implements Serializable {
 
     @Column(name = "crnt_rec_flg")
     private Boolean crntRecFlg;
+    
+    @Column(name = "ADT_VST_SEQ")
+    private Long adtVstSeq;
+    
+    @Column(name = "SCR")
+    private Integer scr;
+    
+    @Column(name = "SVRTY_KEY")
+    private Long svrtyKey;
+
+	public Integer getScr() {
+		return scr;
+	}
+
+	public void setScr(Integer scr) {
+		this.scr = scr;
+	}
+
+	public Long getSvrtyKey() {
+		return svrtyKey;
+	}
+
+	public void setSvrtyKey(Long svrtyKey) {
+		this.svrtyKey = svrtyKey;
+	}
+
+	public Long getAdtVstSeq() {
+		return adtVstSeq;
+	}
+
+	public void setAdtVstSeq(Long adtVstSeq) {
+		this.adtVstSeq = adtVstSeq;
+	}
 
 	public Long getAdtFndngSeq() {
 		return adtFndngSeq;
