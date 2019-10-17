@@ -1,187 +1,193 @@
+
 package com.idev4.compliance.domain;
-
-import javax.persistence.*;
-
-import com.idev4.compliance.ids.MwQstnrId;
 
 import java.io.Serializable;
 import java.time.Instant;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+
+import com.idev4.compliance.ids.MwQstnrId;
+
 @Entity
-@Table(name = "mw_qstnr")
-@IdClass(MwQstnrId.class)
+@Table ( name = "mw_qstnr" )
+@IdClass ( MwQstnrId.class )
 public class MwQstnr implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "qstnr_seq")
+    @Column ( name = "qstnr_seq" )
     private Long qstnrSeq;
 
-    @Column(name = "qstnr_nm")
+    @Column ( name = "qstnr_nm" )
     private String qstnrNm;
-    
-    @Column(name = "qstnr_id")
+
+    @Column ( name = "qstnr_id" )
     private String qstnrId;
 
-    @Column(name = "qstnr_sts_key")
+    @Column ( name = "qstnr_sts_key" )
     private Long qstnrStsKey;
-        
-    @Column(name = "crtd_by")
+
+    @Column ( name = "crtd_by" )
     private String crtdBy;
 
-    @Column(name = "crtd_dt")
+    @Column ( name = "crtd_dt" )
     private Instant crtdDt;
 
-    @Column(name = "last_upd_by")
+    @Column ( name = "last_upd_by" )
     private String lastUpdBy;
 
-    @Column(name = "last_upd_dt")
+    @Column ( name = "last_upd_dt" )
     private Instant lastUpdDt;
 
-    @Column(name = "del_flg")
+    @Column ( name = "del_flg" )
     private Boolean delFlg;
 
     @Id
-    @Column(name = "eff_start_dt")
+    @Column ( name = "eff_start_dt" )
     private Instant effStartDt;
 
-    @Column(name = "eff_end_dt")
+    @Column ( name = "eff_end_dt" )
     private Instant effEndDt;
 
-    @Column(name = "crnt_rec_flg")
+    @Column ( name = "crnt_rec_flg" )
     private Boolean crntRecFlg;
 
-    @Column(name = "QSTNR_CTGRY_KEY")
+    @Column ( name = "QSTNR_CTGRY_KEY" )
     private Long qstnrCtgryKey;
-    
-    @Column(name = "QSTNR_LVL_KEY")
+
+    @Column ( name = "QSTNR_LVL_KEY" )
     private Long qstnrLvlKey;
-    
-    @Column(name = "QSTNR_RUL")
+
+    @Column ( name = "QSTNR_RUL" )
     private String qstnrRul;
-    
-	public Long getQstnrSeq() {
-		return qstnrSeq;
-	}
 
-	public void setQstnrSeq(long qstnrSeq) {
-		this.qstnrSeq = qstnrSeq;
-	}
+    //
+    public Long getQstnrSeq() {
+        return qstnrSeq;
+    }
 
-	public String getQstnrNm() {
-		return qstnrNm;
-	}
+    public void setQstnrSeq( long qstnrSeq ) {
+        this.qstnrSeq = qstnrSeq;
+    }
 
-	public void setQstnrNm(String qstnrNm) {
-		this.qstnrNm = qstnrNm;
-	}
+    public String getQstnrNm() {
+        return qstnrNm;
+    }
 
-	public String getQstnrId() {
-		return qstnrId;
-	}
+    public void setQstnrNm( String qstnrNm ) {
+        this.qstnrNm = qstnrNm;
+    }
 
-	public void setQstnrId(String qstnrId) {
-		this.qstnrId = qstnrId;
-	}
+    public String getQstnrId() {
+        return qstnrId;
+    }
 
-	public long getQstnrStsKey() {
-		return qstnrStsKey;
-	}
+    public void setQstnrId( String qstnrId ) {
+        this.qstnrId = qstnrId;
+    }
 
-	public void setQstnrStsKey(Long qstnrStsKey) {
-		this.qstnrStsKey = qstnrStsKey;
-	}
+    public long getQstnrStsKey() {
+        return qstnrStsKey;
+    }
 
-	public String getCrtdBy() {
-		return crtdBy;
-	}
+    public void setQstnrStsKey( Long qstnrStsKey ) {
+        this.qstnrStsKey = qstnrStsKey;
+    }
 
-	public void setCrtdBy(String crtdBy) {
-		this.crtdBy = crtdBy;
-	}
+    public String getCrtdBy() {
+        return crtdBy;
+    }
 
-	public Instant getCrtdDt() {
-		return crtdDt;
-	}
+    public void setCrtdBy( String crtdBy ) {
+        this.crtdBy = crtdBy;
+    }
 
-	public void setCrtdDt(Instant crtdDt) {
-		this.crtdDt = crtdDt;
-	}
+    public Instant getCrtdDt() {
+        return crtdDt;
+    }
 
-	public String getLastUpdBy() {
-		return lastUpdBy;
-	}
+    public void setCrtdDt( Instant crtdDt ) {
+        this.crtdDt = crtdDt;
+    }
 
-	public void setLastUpdBy(String lastUpdBy) {
-		this.lastUpdBy = lastUpdBy;
-	}
+    public String getLastUpdBy() {
+        return lastUpdBy;
+    }
 
-	public Instant getLastUpdDt() {
-		return lastUpdDt;
-	}
+    public void setLastUpdBy( String lastUpdBy ) {
+        this.lastUpdBy = lastUpdBy;
+    }
 
-	public void setLastUpdDt(Instant lastUpdDt) {
-		this.lastUpdDt = lastUpdDt;
-	}
+    public Instant getLastUpdDt() {
+        return lastUpdDt;
+    }
 
-	public Boolean getDelFlg() {
-		return delFlg;
-	}
+    public void setLastUpdDt( Instant lastUpdDt ) {
+        this.lastUpdDt = lastUpdDt;
+    }
 
-	public void setDelFlg(Boolean delFlg) {
-		this.delFlg = delFlg;
-	}
+    public Boolean getDelFlg() {
+        return delFlg;
+    }
 
-	public Instant getEffStartDt() {
-		return effStartDt;
-	}
+    public void setDelFlg( Boolean delFlg ) {
+        this.delFlg = delFlg;
+    }
 
-	public void setEffStartDt(Instant effStartDt) {
-		this.effStartDt = effStartDt;
-	}
+    public Instant getEffStartDt() {
+        return effStartDt;
+    }
 
-	public Instant getEffEndDt() {
-		return effEndDt;
-	}
+    public void setEffStartDt( Instant effStartDt ) {
+        this.effStartDt = effStartDt;
+    }
 
-	public void setEffEndDt(Instant effEndDt) {
-		this.effEndDt = effEndDt;
-	}
+    public Instant getEffEndDt() {
+        return effEndDt;
+    }
 
-	public Boolean getCrntRecFlg() {
-		return crntRecFlg;
-	}
+    public void setEffEndDt( Instant effEndDt ) {
+        this.effEndDt = effEndDt;
+    }
 
-	public void setCrntRecFlg(Boolean crntRecFlg) {
-		this.crntRecFlg = crntRecFlg;
-	}
+    public Boolean getCrntRecFlg() {
+        return crntRecFlg;
+    }
 
-	public Long getQstnrCtgryKey() {
-		return qstnrCtgryKey;
-	}
+    public void setCrntRecFlg( Boolean crntRecFlg ) {
+        this.crntRecFlg = crntRecFlg;
+    }
 
-	public void setQstnrCtgryKey(Long qstnrCtgryKey) {
-		this.qstnrCtgryKey = qstnrCtgryKey;
-	}
+    public Long getQstnrCtgryKey() {
+        return qstnrCtgryKey;
+    }
 
-	public Long getQstnrLvlKey() {
-		return qstnrLvlKey;
-	}
+    public void setQstnrCtgryKey( Long qstnrCtgryKey ) {
+        this.qstnrCtgryKey = qstnrCtgryKey;
+    }
 
-	public void setQstnrLvlKey(Long qstnrLvlKey) {
-		this.qstnrLvlKey = qstnrLvlKey;
-	}
+    public Long getQstnrLvlKey() {
+        return qstnrLvlKey;
+    }
 
-	public void setQstnrSeq(Long qstnrSeq) {
-		this.qstnrSeq = qstnrSeq;
-	}
+    public void setQstnrLvlKey( Long qstnrLvlKey ) {
+        this.qstnrLvlKey = qstnrLvlKey;
+    }
 
-	public String getQstnrRul() {
-		return qstnrRul;
-	}
+    public void setQstnrSeq( Long qstnrSeq ) {
+        this.qstnrSeq = qstnrSeq;
+    }
 
-	public void setQstnrRul(String qstnrRul) {
-		this.qstnrRul = qstnrRul;
-	}
+    public String getQstnrRul() {
+        return qstnrRul;
+    }
+
+    public void setQstnrRul( String qstnrRul ) {
+        this.qstnrRul = qstnrRul;
+    }
 }

@@ -10,34 +10,34 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
 
-import com.idev4.compliance.ids.MwAdtTrgtId;
+import com.idev4.compliance.ids.MwAdtSubCtgryId;
 
-/**
- * A MwBrnch.
- */
 @Entity
-@Table ( name = "MW_ADT_TRGT" )
-@IdClass ( MwAdtTrgtId.class )
-public class MwAdtTrgt implements Serializable {
+@Table ( name = "MW_ADT_SB_CTGRY" )
+@IdClass ( MwAdtSubCtgryId.class )
+public class MwAdtSubCtgry implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column ( name = "ADT_TRGT_SEQ" )
-    private Long adtTrgtSeq;
+    @Column ( name = "SB_CTGRY_SEQ" )
+    private Long sbCtgrySeq;
 
     @Id
     @Column ( name = "eff_start_dt" )
     private Instant effStartDt;
 
-    @Column ( name = "BRNCH_SEQ" )
-    private Long brnchSeq;
+    @Column ( name = "ADT_CTGRY_SEQ" )
+    private Long adtCtgrySeq;
 
-    @Column ( name = "TRGT" )
-    private Long trgt;
+    @Column ( name = "SB_CTGRY_ID" )
+    private String subCtgryId;
 
-    @Column ( name = "TRGT_YR" )
-    private Long trgtYr;
+    @Column ( name = "SB_CTGRY_NM" )
+    private String subCtgryNm;
+
+    @Column ( name = "SB_CTGRY_CMNT" )
+    private String subCtgryCmnt;
 
     @Column ( name = "crtd_by" )
     private String crtdBy;
@@ -60,12 +60,12 @@ public class MwAdtTrgt implements Serializable {
     @Column ( name = "crnt_rec_flg" )
     private Boolean crntRecFlg;
 
-    public Long getAdtTrgtSeq() {
-        return adtTrgtSeq;
+    public Long getSbCtgrySeq() {
+        return sbCtgrySeq;
     }
 
-    public void setAdtTrgtSeq( Long adtTrgtSeq ) {
-        this.adtTrgtSeq = adtTrgtSeq;
+    public void setSbCtgrySeq( Long sbCtgrySeq ) {
+        this.sbCtgrySeq = sbCtgrySeq;
     }
 
     public Instant getEffStartDt() {
@@ -76,28 +76,36 @@ public class MwAdtTrgt implements Serializable {
         this.effStartDt = effStartDt;
     }
 
-    public Long getBrnchSeq() {
-        return brnchSeq;
+    public Long getAdtCtgrySeq() {
+        return adtCtgrySeq;
     }
 
-    public void setBrnchSeq( Long brnchSeq ) {
-        this.brnchSeq = brnchSeq;
+    public void setAdtCtgrySeq( Long adtCtgrySeq ) {
+        this.adtCtgrySeq = adtCtgrySeq;
     }
 
-    public Long getTrgt() {
-        return trgt;
+    public String getSubCtgryId() {
+        return subCtgryId;
     }
 
-    public void setTrgt( Long trgt ) {
-        this.trgt = trgt;
+    public void setSubCtgryId( String subCtgryId ) {
+        this.subCtgryId = subCtgryId;
     }
 
-    public Long getTrgtYr() {
-        return trgtYr;
+    public String getSubCtgryNm() {
+        return subCtgryNm;
     }
 
-    public void setTrgtYr( Long trgtYr ) {
-        this.trgtYr = trgtYr;
+    public void setSubCtgryNm( String subCtgryNm ) {
+        this.subCtgryNm = subCtgryNm;
+    }
+
+    public String getSubCtgryCmnt() {
+        return subCtgryCmnt;
+    }
+
+    public void setSubCtgryCmnt( String subCtgryCmnt ) {
+        this.subCtgryCmnt = subCtgryCmnt;
     }
 
     public String getCrtdBy() {
@@ -154,10 +162,6 @@ public class MwAdtTrgt implements Serializable {
 
     public void setCrntRecFlg( Boolean crntRecFlg ) {
         this.crntRecFlg = crntRecFlg;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
 }
