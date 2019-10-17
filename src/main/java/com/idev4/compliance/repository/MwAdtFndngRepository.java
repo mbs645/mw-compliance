@@ -1,7 +1,6 @@
 
 package com.idev4.compliance.repository;
 
-import java.time.Instant;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,7 +14,9 @@ import com.idev4.compliance.domain.MwAdtFndng;
 @SuppressWarnings ( "unused" )
 @Repository
 public interface MwAdtFndngRepository extends JpaRepository< MwAdtFndng, Long > {
-	
-	public MwAdtFndng findOneByAdtFndngSeqAndCrntRecFlg(Long seq, boolean flag);
-	
+
+    public MwAdtFndng findOneByAdtFndngSeqAndCrntRecFlg( Long seq, boolean flag );
+
+    public List< MwAdtFndng > findAllByCrntRecFlg( boolean flag );
+
 }
