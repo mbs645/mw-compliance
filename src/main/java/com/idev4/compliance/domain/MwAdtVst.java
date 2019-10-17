@@ -38,17 +38,17 @@ public class MwAdtVst implements Serializable {
     @Column(name = "END_DT")
     private Instant endDt;
     
-    @Column(name = "ACTUAL_START_DT")
-    private Instant actualStrtDt;
+    @Column(name = "ACTL_START_DT")
+    private Instant actlStrtDt;
     
-    @Column(name = "ACTUAL_END_DT")
-    private Instant actualEndDt;
+    @Column(name = "ACTL_END_DT")
+    private Instant actlEndDt;
     
-    @Column(name = "ASSIGNED_TO")
-    private Long assignedTo;
+    @Column(name = "ASGN_TO")
+    private Long asgnTo;
     
-    @Column(name = "VISIT_STS_KEY")
-    private Long visitStsKey;
+    @Column(name = "VST_STS_KEY")
+    private Long vstStsKey;
     
     @Column(name = "ADT_FLG")
     private Long adtFlg;
@@ -122,36 +122,36 @@ public class MwAdtVst implements Serializable {
 		this.endDt = endDt;
 	}
 
-	public Instant getActualStrtDt() {
-		return actualStrtDt;
+	public Instant getActlStrtDt() {
+		return actlStrtDt;
 	}
 
-	public void setActualStrtDt(Instant actualStrtDt) {
-		this.actualStrtDt = actualStrtDt;
+	public void setActlStrtDt(Instant actlStrtDt) {
+		this.actlStrtDt = actlStrtDt;
 	}
 
-	public Instant getActualEndDt() {
-		return actualEndDt;
+	public Instant getActlEndDt() {
+		return actlEndDt;
 	}
 
-	public void setActualEndDt(Instant actualEndDt) {
-		this.actualEndDt = actualEndDt;
+	public void setActlEndDt(Instant actlEndDt) {
+		this.actlEndDt = actlEndDt;
 	}
 
-	public Long getAssignedTo() {
-		return assignedTo;
+	public Long getAsgnTo() {
+		return asgnTo;
 	}
 
-	public void setAssignedTo(Long assignedTo) {
-		this.assignedTo = assignedTo;
+	public void setAsgnTo(Long asgnTo) {
+		this.asgnTo = asgnTo;
 	}
 
-	public Long getVisitStsKey() {
-		return visitStsKey;
+	public Long getVstStsKey() {
+		return vstStsKey;
 	}
 
-	public void setVisitStsKey(Long visitStsKey) {
-		this.visitStsKey = visitStsKey;
+	public void setVstStsKey(Long vstStsKey) {
+		this.vstStsKey = vstStsKey;
 	}
 
 	public Long getAdtFlg() {
@@ -217,5 +217,11 @@ public class MwAdtVst implements Serializable {
 	public void setCrntRecFlg(Boolean crntRecFlg) {
 		this.crntRecFlg = crntRecFlg;
 	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	
 
 }

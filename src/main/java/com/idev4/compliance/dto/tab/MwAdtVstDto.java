@@ -20,13 +20,13 @@ public class MwAdtVstDto {
 
     public String end_dt;
 
-    public String actual_strt_dt;
+    public String actl_strt_dt;
 
-    public String actual_end_dt;
+    public String actl_end_dt;
 
-    public Long assigned_to;
+    public Long asgn_to;
 
-    public Long visit_sts_key;
+    public Long vst_sts_key;
 
     public Long adt_flg;
 
@@ -64,10 +64,10 @@ public class MwAdtVstDto {
         vst_id = dom.getVstId();
         strt_dt = ( dom.getStrtDt() == null ) ? "" : Common.GetFormattedDateForTab( dom.getStrtDt(), false );
         end_dt = ( dom.getEndDt() == null ) ? "" : Common.GetFormattedDateForTab( dom.getEndDt(), false );
-        actual_strt_dt = ( dom.getActualStrtDt() == null ) ? "" : Common.GetFormattedDateForTab( dom.getActualStrtDt(), false );
-        actual_end_dt = ( dom.getActualEndDt() == null ) ? "" : Common.GetFormattedDateForTab( dom.getActualEndDt(), false );
-        assigned_to = dom.getAssignedTo();
-        visit_sts_key = dom.getVisitStsKey();
+        actl_strt_dt = ( dom.getActlStrtDt() == null ) ? "" : Common.GetFormattedDateForTab( dom.getActlStrtDt(), false );
+        actl_end_dt = ( dom.getActlEndDt() == null ) ? "" : Common.GetFormattedDateForTab( dom.getActlEndDt(), false );
+        asgn_to = dom.getAsgnTo();
+        vst_sts_key = dom.getVstStsKey();
         adt_flg = dom.getAdtFlg();
     }
 }

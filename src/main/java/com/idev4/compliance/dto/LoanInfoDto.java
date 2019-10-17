@@ -8,7 +8,7 @@ public class LoanInfoDto {
 	public String occ;
 	public String cmntyNm; 
 	public String portNm;
-	public String odFlg; 
+	public String odDays; 
 	public String prdSeq;
 	public String nkinFlg; 
 	public String bizChngFlg;
@@ -42,4 +42,14 @@ public class LoanInfoDto {
 	public String dsbmtDt;
 	public String cmpltDt;
 	public String prdId;
+	public String monthLstVst;
+	public String instAdv;
+	public String crdtScr;
+	public String actKey;
+	public String prvBizActy;
+
+
+
+
+
 }

@@ -18,9 +18,10 @@ public interface MwAdtVstRepository extends JpaRepository< MwAdtVst, Long > {
 	
 	public List<MwAdtVst> findAllByBrnchSeqAndCrntRecFlg(Long brnchSeq, boolean flag);
 	
-	public List<MwAdtVst> findAllByAssignedToAndCrntRecFlg(Long empSeq, boolean flag);
+	public List<MwAdtVst> findAllByAsgnToAndCrntRecFlg(Long empSeq, boolean flag);
 	
-	public List<MwAdtVst> findAllByAssignedToAndVisitStsKeyAndCrntRecFlg(Long empSeq,Long vstSts, boolean flag);
-	
+	//public List<MwAdtVst> findAllByAssignedToAndVisitStsKeyAndCrntRecFlg(Long empSeq,Long vstSts, boolean flag);
+	public List<MwAdtVst> findAllByAsgnToAndVstStsKeyAndCrntRecFlg(Long empSeq,Long vstSts, boolean flag);
+
 	public MwAdtVst findOneByAdtVstSeqAndCrntRecFlg(Long adtVstSeq, boolean flag);
 }
