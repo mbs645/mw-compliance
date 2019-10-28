@@ -1,6 +1,7 @@
 
 package com.idev4.compliance.service;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -15,6 +16,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.idev4.compliance.domain.MwAdtBrnchRnkng;
 import com.idev4.compliance.domain.MwAdtFndng;
 import com.idev4.compliance.domain.MwAdtVst;
 import com.idev4.compliance.domain.MwAdtVstSrvy;
@@ -30,6 +32,7 @@ import com.idev4.compliance.dto.LoanInfoDto;
 import com.idev4.compliance.dto.TabDto;
 import com.idev4.compliance.dto.tab.ComplianceSubmitDto;
 import com.idev4.compliance.dto.tab.MwAdtVstDto;
+import com.idev4.compliance.repository.MwAdtBrnchRnkngRepository;
 import com.idev4.compliance.repository.MwAdtCtgryRepository;
 import com.idev4.compliance.repository.MwAdtFndngRepository;
 import com.idev4.compliance.repository.MwAdtIsuRepository;
@@ -84,9 +87,13 @@ public class ComplianceService {
 
     private final MwAdtSbCtgryRepository mwAdtSbCtgryRepository;
 
+    private final MwAdtBrnchRnkngRepository mwAdtBrnchRnkngRepository;
+
     private final DateFormat formatter = new SimpleDateFormat( "dd-MM-yyyy hh:mm:ss" );
 
     private final DateFormat formatterDate = new SimpleDateFormat( "dd-MM-yyyy" );
+
+    private static long totSum = 0L;
 
     // private final MwBrnchRepository mwBrnchRepository;
 
@@ -95,8 +102,8 @@ public class ComplianceService {
             MwBrnchRepository mwBrnchRepository, MwAdtVstRepository mwAdtVstRepository, MwAdtVstSrvyRepository mwAdtVstSrvyRepository,
             MwAdtFndngRepository mwAdtFndngRepository, MwBrnchEmpRelRepository mwbrnchEmpRelRepository,
             MwPortEmpRelRespository mwPortEmpRelRepository, MwDvcRgstrRepository mwDvcRgstryRepository,
-            MwAdtIsuRepository mwAdtIsuRepository, MwAdtCtgryRepository mwAdtCtgryRepository,
-            MwAdtSbCtgryRepository mwAdtSbCtgryRepository ) {
+            MwAdtIsuRepository mwAdtIsuRepository, MwAdtCtgryRepository mwAdtCtgryRepository, MwAdtSbCtgryRepository mwAdtSbCtgryRepository,
+            MwAdtBrnchRnkngRepository mwAdtBrnchRnkngRepository ) {
         this.em = em;
         this.mwQstnrRepository = mwQstnrRepository;
         this.mwQstRepository = mwQstRepository;
@@ -113,6 +120,7 @@ public class ComplianceService {
         this.mwAdtIsuRepository = mwAdtIsuRepository;
         this.mwAdtCtgryRepository = mwAdtCtgryRepository;
         this.mwAdtSbCtgryRepository = mwAdtSbCtgryRepository;
+        this.mwAdtBrnchRnkngRepository = mwAdtBrnchRnkngRepository;
 
     }
 
@@ -525,11 +533,6 @@ public class ComplianceService {
         return resp;
     }
 
-    @Async
-    public void calScore() {
-        MwAdtFndng adtFindings = mwAdtFndngRepository.f
-    }
-
     public class PrvVstDto {
 
         public String vstId;
@@ -577,5 +580,97 @@ public class ComplianceService {
         public String lstNm;
 
         public String loanId;
+    }
+
+    @Async
+    public Long calScore( Long vstSeq, Long brnchSeq ) {
+
+        // Long brnchScr = mwAdtFndngRepository.getVstScrSum( vstSeq );
+        // List< MwAdtBrnchRnkng > brnchRnkngList = mwAdtBrnchRnkngRepository.findOneByBrnchSeqAndCrntRecFlg( brnchSeq, true );
+        //
+        // brnchRnkngList.stream().filter( brnch -> brnchSeq.longValue() == brnch.getBrnchSeq().longValue() )
+        // .peek( brnch -> brnch.setBrnchScr( brnchScr ) ).collect( Collectors.toList() );
+
+        long totalSum = 0L;
+        Query rs = em.createNativeQuery( "select ctg.ADT_CTGRY_SEQ,round(count(fnding.issue_key)/\r\n"
+                + "(select count(ENTY_SEQ) from MW_ADT_VST_SRVY avs where avs.ADT_VST_SEQ=fnding.ADT_VST_SEQ and avs.enty_typ_flg=1) *100,0) as cal_score \r\n"
+                + "from MW_ADT_FNDNG fnding \r\n" + "join MW_ADT_ISU isu on isu.ISU_ID = fnding.ISSUE_KEY AND isu.CRNT_REC_FLG = 1\r\n"
+                + "join MW_ADT_SB_CTGRY sctg on sctg.ADT_CTGRY_SEQ = isu.ADT_ISU_SEQ AND sctg.CRNT_REC_FLG = 1\r\n"
+                + "join MW_ADT_CTGRY ctg on ctg.ADT_CTGRY_SEQ = sctg.ADT_CTGRY_SEQ AND ctg.CRNT_REC_FLG = 1 AND ctg.CTGRY_ENTY_FLG =1\r\n"
+                + "--join MW_ADT_VST_SRVY avs on avs.ADT_VST_SEQ = fnding.ADT_VST_SEQ and avs.CRNT_REC_FLG = 1\r\n"
+                + "where fnding.CRNT_REC_FLG = 1 and fnding.ADT_VST_SEQ=:vstSeq\r\n" + "group by ctg.ADT_CTGRY_SEQ,fnding.ADT_VST_SEQ " )
+                .setParameter( "vstSeq", vstSeq );
+
+        List< Object[] > obj = rs.getResultList();
+
+        for ( Object[] o : obj ) {
+
+            Query scr = em
+                    .createNativeQuery( "select ded_scr\r\n" + "from mw_adt_ctgry_slbs sl\r\n" + "where sl.crnt_rec_flg=1\r\n"
+                            + "and sl.adt_ctgry_seq = :ctgseq\r\n" + "and :scr between sl.start_lmt and nvl(sl.end_lmt,99999999)" )
+                    .setParameter( "ctgseq", new BigDecimal( o[ 0 ].toString() ).longValue() )
+                    .setParameter( "scr", new BigDecimal( o[ 1 ].toString() ).longValue() );
+            try {
+                Object scrObj = scr.getSingleResult();
+                if ( scrObj != null ) {
+
+                    Long totScr = ( scrObj == null ) ? 0L : new BigDecimal( scrObj.toString() ).longValue();
+
+                    totalSum = totalSum + totScr;
+                }
+            } catch ( Exception e ) {
+            }
+
+        }
+
+        long totalSum1 = 0L;
+        Query res = em.createNativeQuery( "select ctg.ADT_CTGRY_SEQ,round(count(fnding.issue_key)/\r\n"
+                + "(select count(ENTY_SEQ) from MW_ADT_VST_SRVY avs where avs.ADT_VST_SEQ=fnding.ADT_VST_SEQ and avs.enty_typ_flg=1) *100,0) as cal_score \r\n"
+                + "from MW_ADT_FNDNG fnding \r\n" + "join MW_ADT_ISU isu on isu.ISU_ID = fnding.ISSUE_KEY AND isu.CRNT_REC_FLG = 1\r\n"
+                + "join MW_ADT_SB_CTGRY sctg on sctg.ADT_CTGRY_SEQ = isu.ADT_ISU_SEQ AND sctg.CRNT_REC_FLG = 1\r\n"
+                + "join MW_ADT_CTGRY ctg on ctg.ADT_CTGRY_SEQ = sctg.ADT_CTGRY_SEQ AND ctg.CRNT_REC_FLG = 1 AND ctg.CTGRY_ENTY_FLG =2\r\n"
+                + "--join MW_ADT_VST_SRVY avs on avs.ADT_VST_SEQ = fnding.ADT_VST_SEQ and avs.CRNT_REC_FLG = 1\r\n"
+                + "where fnding.CRNT_REC_FLG = 1 and fnding.ADT_VST_SEQ=:vstSeq\r\n" + "group by ctg.ADT_CTGRY_SEQ,fnding.ADT_VST_SEQ " )
+                .setParameter( "vstSeq", vstSeq );
+
+        List< Object[] > ob = rs.getResultList();
+
+        for ( Object[] b : ob ) {
+
+            Query scr2 = em
+                    .createNativeQuery( "select ded_scr\r\n" + "from mw_adt_ctgry_slbs sl\r\n" + "where sl.crnt_rec_flg=1\r\n"
+                            + "and sl.adt_ctgry_seq = :ctgseq\r\n" + "and :scr between sl.start_lmt and nvl(sl.end_lmt,99999999)" )
+                    .setParameter( "ctgseq", new BigDecimal( b[ 0 ].toString() ).longValue() )
+                    .setParameter( "scr", new BigDecimal( b[ 1 ].toString() ).longValue() );
+            try {
+                Object scrOb = scr2.getSingleResult();
+                if ( scrOb != null ) {
+
+                    Long totScr1 = ( scrOb == null ) ? 0L : new BigDecimal( scrOb.toString() ).longValue();
+
+                    totalSum1 = totalSum1 + totScr1;
+                }
+            } catch ( Exception e ) {
+            }
+
+        }
+
+        MwAdtBrnchRnkng brnchRnk = mwAdtBrnchRnkngRepository.findOneByBrnchSeqAndCrntRecFlg( brnchSeq, true );
+        if ( brnchRnk != null ) {
+            brnchRnk.setCrntRecFlg( false );
+            mwAdtBrnchRnkngRepository.save( brnchRnk );
+        }
+        MwAdtBrnchRnkng b = new MwAdtBrnchRnkng();
+        Long seq = SequenceFinder.findNextVal( Sequences.ADT_BRNCH_RKNG_SEQ );
+        b.setAdtBrcnhRnkgSeq( seq );
+        b.setBrnchSeq( brnchSeq );
+        b.setLstVstSeq( vstSeq );
+        b.setRnkngDte( Instant.now() );
+        b.setBrnchScr( 100 - ( totalSum + totalSum1 ) );
+        b.setCrntRecFlg( true );
+        mwAdtBrnchRnkngRepository.save( b );
+
+        return ( 100 - ( totalSum + totalSum1 ) );
+
     }
 }
