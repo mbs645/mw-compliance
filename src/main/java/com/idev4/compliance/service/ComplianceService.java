@@ -256,6 +256,7 @@ public class ComplianceService {
                 }
             } );
         }
+        calScore( vst.getAdtVstSeq(), vst.getBrnchSeq() );
         return ResponseEntity.ok().body( "{\"body\":\"Success\"}" );
     }
 
