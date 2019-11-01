@@ -3,10 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.idev4.admin</groupId>
-    <artifactId>adminservice</artifactId>
+    <artifactId>compliance</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
-    <name>Adminservice</name>
+    <name>Compliance</name>
 
     <!-- test more information at https://blogs.oracle.com/dev2dev/entry/how_to_get_oracle_jdbc -->
     <repositories>

@@ -12,9 +12,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.idev4.compliance.domain.MwAdtBrnchRnkng;
 import com.idev4.compliance.domain.MwAdtFndng;
 import com.idev4.compliance.domain.MwAdtVst;
 import com.idev4.compliance.domain.MwAdtVstSrvy;
@@ -31,6 +33,7 @@ import com.idev4.compliance.dto.LoanInfoDto;
 import com.idev4.compliance.dto.TabDto;
 import com.idev4.compliance.dto.tab.ComplianceSubmitDto;
 import com.idev4.compliance.dto.tab.MwAdtVstDto;
+import com.idev4.compliance.repository.MwAdtBrnchRnkngRepository;
 import com.idev4.compliance.repository.MwAdtCtgryRepository;
 import com.idev4.compliance.repository.MwAdtFndngRepository;
 import com.idev4.compliance.repository.MwAdtIsuRepository;
@@ -73,22 +76,27 @@ public class ComplianceService {
     private final MwAdtVstSrvyRepository mwAdtVstSrvyRepository;
 
     private final MwAdtFndngRepository mwAdtFndngRepository;
-    
+
     private final MwBrnchEmpRelRepository mwbrnchEmpRelRepository;
 
     private final MwPortEmpRelRespository mwPortEmpRelRepository;
 
     private final MwDvcRgstrRepository mwDvcRgstryRepository;
-    
+
     private final MwAdtIsuRepository mwAdtIsuRepository;
 
     private final MwAdtCtgryRepository mwAdtCtgryRepository;
-    
+
     private final MwAdtSbCtgryRepository mwAdtSbCtgryRepository;
     private final MwAppRconRepository  mwAppRconRepository;
+
+    private final MwAdtBrnchRnkngRepository mwAdtBrnchRnkngRepository;
+
     private final DateFormat formatter = new SimpleDateFormat( "dd-MM-yyyy hh:mm:ss" );
 
     private final DateFormat formatterDate = new SimpleDateFormat( "dd-MM-yyyy" );
+
+    private static long totSum = 0L;
 
     // private final MwBrnchRepository mwBrnchRepository;
 
@@ -96,7 +104,8 @@ public class ComplianceService {
             MwAnswrRepository mwAnswrRepository, MwRefCdValRepository mwRefCdValRepository, MwEmpRepository mwEmpRepository,
             MwBrnchRepository mwBrnchRepository, MwAdtVstRepository mwAdtVstRepository, MwAdtVstSrvyRepository mwAdtVstSrvyRepository,
             MwAdtFndngRepository mwAdtFndngRepository,MwBrnchEmpRelRepository mwbrnchEmpRelRepository,MwPortEmpRelRespository mwPortEmpRelRepository,MwDvcRgstrRepository mwDvcRgstryRepository 
-            ,MwAdtIsuRepository mwAdtIsuRepository,MwAdtCtgryRepository mwAdtCtgryRepository,MwAdtSbCtgryRepository mwAdtSbCtgryRepository,MwAppRconRepository  mwAppRconRepository) {
+            ,MwAdtIsuRepository mwAdtIsuRepository,MwAdtCtgryRepository mwAdtCtgryRepository,MwAdtSbCtgryRepository mwAdtSbCtgryRepository,MwAppRconRepository  mwAppRconRepository
+            MwAdtBrnchRnkngRepository mwAdtBrnchRnkngRepository ) {
         this.em = em;
         this.mwQstnrRepository = mwQstnrRepository;
         this.mwQstRepository = mwQstRepository;
@@ -114,7 +123,7 @@ public class ComplianceService {
         this.mwAdtCtgryRepository=mwAdtCtgryRepository;
         this.mwAdtSbCtgryRepository=mwAdtSbCtgryRepository;
         this.mwAppRconRepository=mwAppRconRepository;
-
+        this.mwAdtBrnchRnkngRepository = mwAdtBrnchRnkngRepository;
 
     }
 
@@ -128,9 +137,9 @@ public class ComplianceService {
         dto.mw_qstnr = mwQstnrRepository.findAllByCrntRecFlg( true );
         dto.mw_qst = mwQstRepository.findAllByDelFlgAndCrntRecFlg( false, true );
         dto.mw_ref_cd_val = mwRefCdValRepository.findAllByCrntRecFlgOrderByRefCdSeq( true );
-       dto.mw_adt_isu=mwAdtIsuRepository.findAllByCrntRecFlg(true);
-       dto.mw_adt_ctgry=mwAdtCtgryRepository.findAllByCrntRecFlg(true);
-       dto.mw_adt_sb_ctgry=mwAdtSbCtgryRepository.findAllByCrntRecFlg(true);
+        dto.mw_adt_isu = mwAdtIsuRepository.findAllByCrntRecFlg( true );
+        dto.mw_adt_ctgry = mwAdtCtgryRepository.findAllByCrntRecFlg( true );
+        dto.mw_adt_sb_ctgry = mwAdtSbCtgryRepository.findAllByCrntRecFlg( true );
         MwEmp emp = mwEmpRepository.findOneByEmpLanId( lanId );
         if ( emp != null ) {
             List< MwAdtVst > mw_adt_vsts = mwAdtVstRepository.findAllByAsgnToAndCrntRecFlg( emp.getEmpSeq(), true );
@@ -171,55 +180,53 @@ public class ComplianceService {
         dto.mw_prv_vst=getPrvVst(98L);
         dto.app_info = complianceData(1);
         return dto;
-        }
-    
-    public List<DvcRgstrDto> getDvcReg() {
-    	List<DvcRgstrDto> dto = new ArrayList< DvcRgstrDto >();
-        List<MwDvcRgstr> dvc1=mwDvcRgstryRepository.findAllByCrntRecFlgAndDelFlg(true,false);
+    }
+
+    public List< DvcRgstrDto > getDvcReg() {
+        List< DvcRgstrDto > dto = new ArrayList< DvcRgstrDto >();
+        List< MwDvcRgstr > dvc1 = mwDvcRgstryRepository.findAllByCrntRecFlgAndDelFlg( true, false );
         if ( dvc1 != null ) {
-        	for(int j=0;j<dvc1.size();j++) {
-            DvcRgstrDto obj=new DvcRgstrDto();	
-		    obj.dvcAddr = dvc1.get(j).getDvcAddr() == null ? "" : dvc1.get(j).getDvcAddr().toString();
-		    if(dvc1.get(j).getEntyTypFlg()==1) {
-		        MwPortEmpRel port= mwPortEmpRelRepository.findOneByPortSeqAndCrntRecFlg(dvc1.get(j).getEntyTypSeq(), true);
-		        MwEmp emp = mwEmpRepository.findOneByEmpSeq(port.getEmpSeq());
-		        obj.seq = emp.getEmpSeq();
-		        obj.type = "BDO > "+emp.getEmpLanId();
-		        		}
-		        else if(dvc1.get(j).getEntyTypFlg()==2) {
-		        		MwBrnchEmpRel brnch= mwbrnchEmpRelRepository.findOneByBrnchSeqAndCrntRecFlg(dvc1.get(j).getEntyTypSeq(), true);
-		        		MwEmp emp = mwEmpRepository.findOneByEmpSeq(brnch.getEmpSeq());
-		        		obj.seq = emp.getEmpSeq();
-		                obj.type = "BM > "+emp.getEmpLanId();
-		        		}
-		    dto.add(obj);
-        	}
+            for ( int j = 0; j < dvc1.size(); j++ ) {
+                DvcRgstrDto obj = new DvcRgstrDto();
+                obj.dvcAddr = dvc1.get( j ).getDvcAddr() == null ? "" : dvc1.get( j ).getDvcAddr().toString();
+                if ( dvc1.get( j ).getEntyTypFlg() == 1 ) {
+                    MwPortEmpRel port = mwPortEmpRelRepository.findOneByPortSeqAndCrntRecFlg( dvc1.get( j ).getEntyTypSeq(), true );
+                    MwEmp emp = mwEmpRepository.findOneByEmpSeq( port.getEmpSeq() );
+                    obj.seq = emp.getEmpSeq();
+                    obj.type = "BDO > " + emp.getEmpLanId();
+                } else if ( dvc1.get( j ).getEntyTypFlg() == 2 ) {
+                    MwBrnchEmpRel brnch = mwbrnchEmpRelRepository.findOneByBrnchSeqAndCrntRecFlg( dvc1.get( j ).getEntyTypSeq(), true );
+                    MwEmp emp = mwEmpRepository.findOneByEmpSeq( brnch.getEmpSeq() );
+                    obj.seq = emp.getEmpSeq();
+                    obj.type = "BM > " + emp.getEmpLanId();
+                }
+                dto.add( obj );
+            }
         }
         return dto;
     }
 
-    public DvcRgstrDto getOneDvcRgstr(String id) {
-    	DvcRgstrDto dto=new DvcRgstrDto();
-        MwDvcRgstr dvc1=mwDvcRgstryRepository.findOneByDvcAddrAndCrntRecFlgAndDelFlg(id,true,false);
+    public DvcRgstrDto getOneDvcRgstr( String id ) {
+        DvcRgstrDto dto = new DvcRgstrDto();
+        MwDvcRgstr dvc1 = mwDvcRgstryRepository.findOneByDvcAddrAndCrntRecFlgAndDelFlg( id, true, false );
         dto.dvcAddr = dvc1.getDvcAddr();
-    	if ( dvc1 != null ) {
-         		if(dvc1.getEntyTypFlg()==1) {
-    		        MwPortEmpRel port= mwPortEmpRelRepository.findOneByPortSeqAndCrntRecFlg(dvc1.getEntyTypSeq(), true);
-    		        MwEmp emp = mwEmpRepository.findOneByEmpSeq(port.getEmpSeq());
-    		        dto.seq = emp.getEmpSeq();
-    		        dto.type = "BDO > "+emp.getEmpLanId();
-    		        		}
-    		        else if(dvc1.getEntyTypFlg()==2) {
-    		        		MwBrnchEmpRel brnch= mwbrnchEmpRelRepository.findOneByBrnchSeqAndCrntRecFlg(dvc1.getEntyTypSeq(), true);
-    		        		MwEmp emp = mwEmpRepository.findOneByEmpSeq(brnch.getEmpSeq());
-    		        		dto.seq = emp.getEmpSeq();
-    		                dto.type = "BM > "+emp.getEmpLanId();
-    		        		}
-         	
-    	}
-         return dto;
+        if ( dvc1 != null ) {
+            if ( dvc1.getEntyTypFlg() == 1 ) {
+                MwPortEmpRel port = mwPortEmpRelRepository.findOneByPortSeqAndCrntRecFlg( dvc1.getEntyTypSeq(), true );
+                MwEmp emp = mwEmpRepository.findOneByEmpSeq( port.getEmpSeq() );
+                dto.seq = emp.getEmpSeq();
+                dto.type = "BDO > " + emp.getEmpLanId();
+            } else if ( dvc1.getEntyTypFlg() == 2 ) {
+                MwBrnchEmpRel brnch = mwbrnchEmpRelRepository.findOneByBrnchSeqAndCrntRecFlg( dvc1.getEntyTypSeq(), true );
+                MwEmp emp = mwEmpRepository.findOneByEmpSeq( brnch.getEmpSeq() );
+                dto.seq = emp.getEmpSeq();
+                dto.type = "BM > " + emp.getEmpLanId();
+            }
+
+        }
+        return dto;
     }
-    
+
     @Transactional
     public ResponseEntity submitDataForCompliance( ComplianceSubmitDto dto, String curUser ) {
 
@@ -295,6 +302,7 @@ public class ComplianceService {
         }
         
        
+        calScore( vst.getAdtVstSeq(), vst.getBrnchSeq() );
         return ResponseEntity.ok().body( "{\"body\":\"Success\"}" );
     }
 
@@ -359,7 +367,6 @@ public class ComplianceService {
             dto.lastRotated = obj[ 50 ] == null ? "" : obj[ 50 ].toString();
             dto.odInst = obj[ 51 ] == null ? "" : obj[ 51 ].toString();
 
-
             resp.add( dto );
         }
         return resp;
@@ -407,7 +414,6 @@ public class ComplianceService {
         mwAdtVstRepository.save( vst );
         return vst;
     }
-    
 
     public List< MwAdtVst > getAdtVisitsForBrnch( long brnchSeq ) {
         return mwAdtVstRepository.findAllByBrnchSeqAndCrntRecFlg( brnchSeq, true );
@@ -426,8 +432,8 @@ public class ComplianceService {
             if ( val != null )
                 inProgressStatusKey = val.getRefCdSeq();
 
-            List< MwAdtVst > vsts = mwAdtVstRepository.findAllByAsgnToAndVstStsKeyAndCrntRecFlg( exVst.getAsgnTo(),
-                    inProgressStatusKey, true );
+            List< MwAdtVst > vsts = mwAdtVstRepository.findAllByAsgnToAndVstStsKeyAndCrntRecFlg( exVst.getAsgnTo(), inProgressStatusKey,
+                    true );
             if ( vsts != null && vsts.size() > 0 ) {
                 return ResponseEntity.badRequest().body( "{\"error\":\"Employee Already has a Visit in Progress.\"}" );
             }
@@ -524,35 +530,35 @@ public class ComplianceService {
         }
         return resp;
     }
-    
-    public List<DVCDto> getDvc_reg(){
-    	String query =Queries.dvc_arr;
-    	Query q=em.createNativeQuery(query);
-    	List<Object[]> result=q.getResultList();
-    	List<DVCDto> resp=new ArrayList<DVCDto>();
-    	for(Object[] obj:result) {
-    		DVCDto dto=new DVCDto();
-    		dto.dvcAddr=obj[0]==null?"": obj[0].toString();
-    		dto.portSeq=obj[1]==null?"": obj[1].toString();
 
-    		dto.id=obj[2]==null?"": obj[2].toString();
-    		resp.add(dto);
+    public List< DVCDto > getDvc_reg() {
+        String query = Queries.dvc_arr;
+        Query q = em.createNativeQuery( query );
+        List< Object[] > result = q.getResultList();
+        List< DVCDto > resp = new ArrayList< DVCDto >();
+        for ( Object[] obj : result ) {
+            DVCDto dto = new DVCDto();
+            dto.dvcAddr = obj[ 0 ] == null ? "" : obj[ 0 ].toString();
+            dto.portSeq = obj[ 1 ] == null ? "" : obj[ 1 ].toString();
 
-    	}
-    	return resp;
+            dto.id = obj[ 2 ] == null ? "" : obj[ 2 ].toString();
+            resp.add( dto );
+
+        }
+        return resp;
     }
 
-    public DVCDto getDvcReg(Long id){
-    	String query =Queries.dvc_reg+"'"+id+"'";
-    	Query q=em.createNativeQuery(query);
-    	List<Object[]> result=q.getResultList();
-		DVCDto dto=new DVCDto();
-    	for(Object[] obj:result) {
-    		dto.dvcAddr=obj[0]==null?"": obj[0].toString();
-	    	dto.portSeq=obj[1]==null?"": obj[1].toString();
-	    	dto.id=obj[2]==null?"": obj[2].toString();
-    	}
-    	return dto;
+    public DVCDto getDvcReg( Long id ) {
+        String query = Queries.dvc_reg + "'" + id + "'";
+        Query q = em.createNativeQuery( query );
+        List< Object[] > result = q.getResultList();
+        DVCDto dto = new DVCDto();
+        for ( Object[] obj : result ) {
+            dto.dvcAddr = obj[ 0 ] == null ? "" : obj[ 0 ].toString();
+            dto.portSeq = obj[ 1 ] == null ? "" : obj[ 1 ].toString();
+            dto.id = obj[ 2 ] == null ? "" : obj[ 2 ].toString();
+        }
+        return dto;
     }
     
     public List<PrvVstDto> getPrvVst(Long brnchSeq){
@@ -580,26 +586,43 @@ public class ComplianceService {
     	}
     	return resp;
     }
-    public class PrvVstDto{
-    	public String vstId;
-    	public String rnkng;
-    	public String vstScr;
-    	public String lstVstDt;
-    	public String lstVstBy;
-    	public String dataChkDt;
-    	public String portCd;
-    	public String portNm;
-    	public String empNm;
-    	public String clntVstd;
-    	public String cmntCnt;
+
+    public class PrvVstDto {
+
+        public String vstId;
+
+        public String rnkng;
+
+        public String vstScr;
+
+        public String lstVstDt;
+
+        public String lstVstBy;
+
+        public String dataChkDt;
+
+        public String portCd;
+
+        public String portNm;
+
+        public String empNm;
+
+        public String clntVstd;
+
+        public String cmntCnt;
 
     }
-    public class DVCDto{
-    	public String dvcAddr;
-    	public String portSeq;
-    	public String id;
+
+    public class DVCDto {
+
+        public String dvcAddr;
+
+        public String portSeq;
+
+        public String id;
 
     }
+
     public class SrvtDto {
 
         public String qstStr;
@@ -611,5 +634,97 @@ public class ComplianceService {
         public String lstNm;
 
         public String loanId;
+    }
+
+    @Async
+    public Long calScore( Long vstSeq, Long brnchSeq ) {
+
+        // Long brnchScr = mwAdtFndngRepository.getVstScrSum( vstSeq );
+        // List< MwAdtBrnchRnkng > brnchRnkngList = mwAdtBrnchRnkngRepository.findOneByBrnchSeqAndCrntRecFlg( brnchSeq, true );
+        //
+        // brnchRnkngList.stream().filter( brnch -> brnchSeq.longValue() == brnch.getBrnchSeq().longValue() )
+        // .peek( brnch -> brnch.setBrnchScr( brnchScr ) ).collect( Collectors.toList() );
+
+        long totalSum = 0L;
+        Query rs = em.createNativeQuery( "select ctg.ADT_CTGRY_SEQ,round(count(fnding.issue_key)/\r\n"
+                + "(select count(ENTY_SEQ) from MW_ADT_VST_SRVY avs where avs.ADT_VST_SEQ=fnding.ADT_VST_SEQ and avs.enty_typ_flg=1) *100,0) as cal_score \r\n"
+                + "from MW_ADT_FNDNG fnding \r\n" + "join MW_ADT_ISU isu on isu.ISU_ID = fnding.ISSUE_KEY AND isu.CRNT_REC_FLG = 1\r\n"
+                + "join MW_ADT_SB_CTGRY sctg on sctg.ADT_CTGRY_SEQ = isu.ADT_ISU_SEQ AND sctg.CRNT_REC_FLG = 1\r\n"
+                + "join MW_ADT_CTGRY ctg on ctg.ADT_CTGRY_SEQ = sctg.ADT_CTGRY_SEQ AND ctg.CRNT_REC_FLG = 1 AND ctg.CTGRY_ENTY_FLG =1\r\n"
+                + "--join MW_ADT_VST_SRVY avs on avs.ADT_VST_SEQ = fnding.ADT_VST_SEQ and avs.CRNT_REC_FLG = 1\r\n"
+                + "where fnding.CRNT_REC_FLG = 1 and fnding.ADT_VST_SEQ=:vstSeq\r\n" + "group by ctg.ADT_CTGRY_SEQ,fnding.ADT_VST_SEQ " )
+                .setParameter( "vstSeq", vstSeq );
+
+        List< Object[] > obj = rs.getResultList();
+
+        for ( Object[] o : obj ) {
+
+            Query scr = em
+                    .createNativeQuery( "select ded_scr\r\n" + "from mw_adt_ctgry_slbs sl\r\n" + "where sl.crnt_rec_flg=1\r\n"
+                            + "and sl.adt_ctgry_seq = :ctgseq\r\n" + "and :scr between sl.start_lmt and nvl(sl.end_lmt,99999999)" )
+                    .setParameter( "ctgseq", new BigDecimal( o[ 0 ].toString() ).longValue() )
+                    .setParameter( "scr", new BigDecimal( o[ 1 ].toString() ).longValue() );
+            try {
+                Object scrObj = scr.getSingleResult();
+                if ( scrObj != null ) {
+
+                    Long totScr = ( scrObj == null ) ? 0L : new BigDecimal( scrObj.toString() ).longValue();
+
+                    totalSum = totalSum + totScr;
+                }
+            } catch ( Exception e ) {
+            }
+
+        }
+
+        long totalSum1 = 0L;
+        Query res = em.createNativeQuery( "select ctg.ADT_CTGRY_SEQ,round(count(fnding.issue_key)/\r\n"
+                + "(select count(ENTY_SEQ) from MW_ADT_VST_SRVY avs where avs.ADT_VST_SEQ=fnding.ADT_VST_SEQ and avs.enty_typ_flg=1) *100,0) as cal_score \r\n"
+                + "from MW_ADT_FNDNG fnding \r\n" + "join MW_ADT_ISU isu on isu.ISU_ID = fnding.ISSUE_KEY AND isu.CRNT_REC_FLG = 1\r\n"
+                + "join MW_ADT_SB_CTGRY sctg on sctg.ADT_CTGRY_SEQ = isu.ADT_ISU_SEQ AND sctg.CRNT_REC_FLG = 1\r\n"
+                + "join MW_ADT_CTGRY ctg on ctg.ADT_CTGRY_SEQ = sctg.ADT_CTGRY_SEQ AND ctg.CRNT_REC_FLG = 1 AND ctg.CTGRY_ENTY_FLG =2\r\n"
+                + "--join MW_ADT_VST_SRVY avs on avs.ADT_VST_SEQ = fnding.ADT_VST_SEQ and avs.CRNT_REC_FLG = 1\r\n"
+                + "where fnding.CRNT_REC_FLG = 1 and fnding.ADT_VST_SEQ=:vstSeq\r\n" + "group by ctg.ADT_CTGRY_SEQ,fnding.ADT_VST_SEQ " )
+                .setParameter( "vstSeq", vstSeq );
+
+        List< Object[] > ob = rs.getResultList();
+
+        for ( Object[] b : ob ) {
+
+            Query scr2 = em
+                    .createNativeQuery( "select ded_scr\r\n" + "from mw_adt_ctgry_slbs sl\r\n" + "where sl.crnt_rec_flg=1\r\n"
+                            + "and sl.adt_ctgry_seq = :ctgseq\r\n" + "and :scr between sl.start_lmt and nvl(sl.end_lmt,99999999)" )
+                    .setParameter( "ctgseq", new BigDecimal( b[ 0 ].toString() ).longValue() )
+                    .setParameter( "scr", new BigDecimal( b[ 1 ].toString() ).longValue() );
+            try {
+                Object scrOb = scr2.getSingleResult();
+                if ( scrOb != null ) {
+
+                    Long totScr1 = ( scrOb == null ) ? 0L : new BigDecimal( scrOb.toString() ).longValue();
+
+                    totalSum1 = totalSum1 + totScr1;
+                }
+            } catch ( Exception e ) {
+            }
+
+        }
+
+        MwAdtBrnchRnkng brnchRnk = mwAdtBrnchRnkngRepository.findOneByBrnchSeqAndCrntRecFlg( brnchSeq, true );
+        if ( brnchRnk != null ) {
+            brnchRnk.setCrntRecFlg( false );
+            mwAdtBrnchRnkngRepository.save( brnchRnk );
+        }
+        MwAdtBrnchRnkng b = new MwAdtBrnchRnkng();
+        Long seq = SequenceFinder.findNextVal( Sequences.ADT_BRNCH_RKNG_SEQ );
+        b.setAdtBrcnhRnkgSeq( seq );
+        b.setBrnchSeq( brnchSeq );
+        b.setLstVstSeq( vstSeq );
+        b.setRnkngDte( Instant.now() );
+        b.setBrnchScr( 100 - ( totalSum + totalSum1 ) );
+        b.setCrntRecFlg( true );
+        mwAdtBrnchRnkngRepository.save( b );
+
+        return ( 100 - ( totalSum + totalSum1 ) );
+
     }
 }

@@ -12,4 +12,6 @@ public class Sequences {
     public final static String SB_CTGRY_SEQ = "SB_CTGRY_SEQ";
 
     public final static String ADT_CTGRY_SEQ = "ADT_CTGRY_SEQ";
+
+    public final static String ADT_BRNCH_RKNG_SEQ = "ADT_BRNCH_RKNG_SEQ";
 }
