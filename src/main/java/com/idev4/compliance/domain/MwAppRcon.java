@@ -3,9 +3,17 @@ package com.idev4.compliance.domain;
 import java.io.Serializable;
 import java.time.Instant;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+
+import com.idev4.compliance.ids.MwAppRconId;
+
 @Entity
 @Table ( name = "MW_APP_RCON" )
-//@IdClass ( MwAdtCtgryId.class )
+@IdClass ( MwAppRconId.class )
 public class MwAppRcon implements Serializable  {
 	
 	 private static final long serialVersionUID = 1L;
@@ -28,7 +36,7 @@ public class MwAppRcon implements Serializable  {
     private String attributeVal;
 
     @Column ( name = "VALID_FLG" )
-    private Boolean validFlg;
+    private String validFlg;
 
     @Column ( name = "ADT_VST_SEQ" )
     private Long adtVstSeq;
@@ -97,11 +105,11 @@ public class MwAppRcon implements Serializable  {
 		this.attributeVal = attributeVal;
 	}
 
-	public Boolean getValidFlg() {
+	public String getValidFlg() {
 		return validFlg;
 	}
 
-	public void setValidFlg(Boolean validFlg) {
+	public void setValidFlg(String validFlg) {
 		this.validFlg = validFlg;
 	}
 

@@ -1,6 +1,7 @@
 
 package com.idev4.compliance.service;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.idev4.compliance.domain.MwAdtFndng;
 import com.idev4.compliance.domain.MwAdtVst;
 import com.idev4.compliance.domain.MwAdtVstSrvy;
+import com.idev4.compliance.domain.MwAppRcon;
 import com.idev4.compliance.domain.MwBrnchEmpRel;
 import com.idev4.compliance.domain.MwDvcRgstr;
 import com.idev4.compliance.domain.MwEmp;
@@ -36,6 +38,7 @@ import com.idev4.compliance.repository.MwAdtSbCtgryRepository;
 import com.idev4.compliance.repository.MwAdtVstRepository;
 import com.idev4.compliance.repository.MwAdtVstSrvyRepository;
 import com.idev4.compliance.repository.MwAnswrRepository;
+import com.idev4.compliance.repository.MwAppRconRepository;
 import com.idev4.compliance.repository.MwBrnchEmpRelRepository;
 import com.idev4.compliance.repository.MwBrnchRepository;
 import com.idev4.compliance.repository.MwDvcRgstrRepository;
@@ -82,7 +85,7 @@ public class ComplianceService {
     private final MwAdtCtgryRepository mwAdtCtgryRepository;
     
     private final MwAdtSbCtgryRepository mwAdtSbCtgryRepository;
-    
+    private final MwAppRconRepository  mwAppRconRepository;
     private final DateFormat formatter = new SimpleDateFormat( "dd-MM-yyyy hh:mm:ss" );
 
     private final DateFormat formatterDate = new SimpleDateFormat( "dd-MM-yyyy" );
@@ -93,7 +96,7 @@ public class ComplianceService {
             MwAnswrRepository mwAnswrRepository, MwRefCdValRepository mwRefCdValRepository, MwEmpRepository mwEmpRepository,
             MwBrnchRepository mwBrnchRepository, MwAdtVstRepository mwAdtVstRepository, MwAdtVstSrvyRepository mwAdtVstSrvyRepository,
             MwAdtFndngRepository mwAdtFndngRepository,MwBrnchEmpRelRepository mwbrnchEmpRelRepository,MwPortEmpRelRespository mwPortEmpRelRepository,MwDvcRgstrRepository mwDvcRgstryRepository 
-            ,MwAdtIsuRepository mwAdtIsuRepository,MwAdtCtgryRepository mwAdtCtgryRepository,MwAdtSbCtgryRepository mwAdtSbCtgryRepository) {
+            ,MwAdtIsuRepository mwAdtIsuRepository,MwAdtCtgryRepository mwAdtCtgryRepository,MwAdtSbCtgryRepository mwAdtSbCtgryRepository,MwAppRconRepository  mwAppRconRepository) {
         this.em = em;
         this.mwQstnrRepository = mwQstnrRepository;
         this.mwQstRepository = mwQstRepository;
@@ -110,14 +113,15 @@ public class ComplianceService {
         this.mwAdtIsuRepository=mwAdtIsuRepository;
         this.mwAdtCtgryRepository=mwAdtCtgryRepository;
         this.mwAdtSbCtgryRepository=mwAdtSbCtgryRepository;
+        this.mwAppRconRepository=mwAppRconRepository;
 
 
     }
 
     public TabDto getDataForTab( String lanId ) {
         TabDto dto = new TabDto();
-        dto.mw_prv_vst=getPrvVst();
-        dto.app_info = complianceData();
+        //dto.mw_prv_vst=getPrvVst();
+       // dto.app_info = complianceData();
         dto.mw_answr = mwAnswrRepository.findAllByDelFlgAndCrntRecFlg( false, true );
         dto.mw_brnch = mwBrnchRepository.findAllByCrntRecFlg( true );
         dto.mw_emp = mwEmpRepository.findAll();
@@ -139,10 +143,33 @@ public class ComplianceService {
         }
         return dto;
     }
+    public List<MwAdtVstDto> getADTVstDataForTab( String lanId ) {
+    	List<MwAdtVstDto> dto = new ArrayList<>();
+      
+        MwEmp emp = mwEmpRepository.findOneByEmpLanId( lanId );
+        if ( emp != null ) {
+            List< MwAdtVst > mw_adt_vsts = mwAdtVstRepository.findAllByAsgnToAndCrntRecFlg( emp.getEmpSeq(), true );
+           // dto = new ArrayList<>();
+            for(MwAdtVst vst : mw_adt_vsts) {
+                MwAdtVstDto sdto = new MwAdtVstDto();
+                sdto.DomainToDto( vst );
+                dto.add( sdto );
+            } 
+        }
+        return dto;
+    }
+    
+    public List<LoanInfoDto> getClientDataForTab( String lanId,Integer brnchSeq ) {
+    	List< LoanInfoDto > app_info  = new ArrayList<>();
+      
+    	app_info = complianceData(brnchSeq);
+
+        return app_info;
+    }
     public TabDto getDataFor() {
         TabDto dto = new TabDto();
-        dto.mw_prv_vst=getPrvVst();
-        dto.app_info = complianceData();
+        dto.mw_prv_vst=getPrvVst(98L);
+        dto.app_info = complianceData(1);
         return dto;
         }
     
@@ -214,6 +241,7 @@ public class ComplianceService {
         vst.setActlEndDt( Instant.now() );
         vst.setLastUpdBy( curUser );
         vst.setLastUpdDt( Instant.now() );
+        vst.setVstStsKey(complSts);
 
         if ( dto.mw_adt_vst_srvy != null ) {
             dto.mw_adt_vst_srvy.forEach( srvDto -> {
@@ -234,7 +262,7 @@ public class ComplianceService {
         if ( dto.mw_adt_fndng != null ) {
             dto.mw_adt_fndng.forEach( fndDto -> {
                 if ( fndDto.adt_fndng_seq != null ) {
-                    MwAdtFndng exFnd = mwAdtFndngRepository.findOneByAdtFndngSeqAndCrntRecFlg( fndDto.adt_fndng_seq, true );
+                	MwAdtFndng exFnd = mwAdtFndngRepository.findOneByAdtFndngSeqAndCrntRecFlg( fndDto.adt_fndng_seq, true );
                     if ( exFnd != null ) {
                         exFnd.setCrntRecFlg( false );
                         exFnd.setDelFlg( true );
@@ -247,12 +275,32 @@ public class ComplianceService {
                 }
             } );
         }
+        
+        if ( dto.mw_app_rcon != null ) {
+            dto.mw_app_rcon.forEach( rconDto -> {
+                if ( rconDto.app_rcon_seq != null ) {
+                	MwAppRcon appRcon = mwAppRconRepository.findOneByAppRconSeqAndCrntRecFlg( rconDto.app_rcon_seq, true );
+                    if ( appRcon != null ) {
+                        appRcon.setCrntRecFlg( false );
+                        appRcon.setDelFlg( true );
+                        appRcon.setLastUpdBy( curUser );
+                        appRcon.setLastUpdDt( Instant.now() );
+                        mwAppRconRepository.save( appRcon );
+                    }
+                    MwAppRcon rco = rconDto.DtoToDomain( formatter, formatterDate );
+
+                    mwAppRconRepository.save( rco );
+                }
+            } );
+        }
+        
+       
         return ResponseEntity.ok().body( "{\"body\":\"Success\"}" );
     }
 
-    public List< LoanInfoDto > complianceData() {
+    public List< LoanInfoDto > complianceData(Integer brnchSeq) {
         String query = Queries.complianceLoansQuery;
-        Query q = em.createNativeQuery( query );
+        Query q = em.createNativeQuery( query ).setParameter("Brnch_seq" , brnchSeq);
         q.setMaxResults( 100 );
         List< Object[] > result = q.getResultList();
         List< LoanInfoDto > resp = new ArrayList< LoanInfoDto >();
@@ -265,7 +313,7 @@ public class ComplianceService {
             dto.occ = obj[ 4 ] == null ? "" : obj[ 4 ].toString();
             dto.cmntyNm = obj[ 5 ] == null ? "" : obj[ 5 ].toString();
             dto.portNm = obj[ 6 ] == null ? "" : obj[ 6 ].toString();
-            dto.odDays = obj[ 7 ] == null ? "" : obj[ 7 ].toString();
+            dto.odDays = obj[ 7 ] == null ? 0 :((BigDecimal) obj[ 7 ]).intValue();
             dto.prdSeq = obj[ 8 ] == null ? "" : obj[ 8 ].toString();
             dto.nkinFlg = obj[ 9 ] == null ? "" : obj[ 9 ].toString();
             dto.bizChngFlg = obj[ 10 ] == null ? "" : obj[ 10 ].toString();
@@ -275,10 +323,10 @@ public class ComplianceService {
             dto.totFmlyMemb = obj[ 14 ] == null ? "" : obj[ 14 ].toString();
             dto.numOfErnrs = obj[ 15 ] == null ? "" : obj[ 15 ].toString();
             dto.prdNm = obj[ 16 ] == null ? "" : obj[ 16 ].toString();
-            dto.prevAmt = obj[ 17 ] == null ? "" : obj[ 17 ].toString();
+            dto.prevAmt = obj[ 17 ] == null ? 0 : ((BigDecimal) obj[ 17 ]).intValue();
             dto.loanCyclNum = obj[ 18 ] == null ? "" : obj[ 18 ].toString();
             dto.rqstdLoanAmt = obj[ 19 ] == null ? "" : obj[ 19 ].toString();
-            dto.aprvdLoanAmt = obj[ 20 ] == null ? "" : obj[ 20 ].toString();
+            dto.aprvdLoanAmt = obj[ 20 ] == null ?0 : ((BigDecimal) obj[ 20 ]).intValue();
             dto.planNm = obj[ 21 ] == null ? "" : obj[ 21 ].toString();
             dto.scrnFlg = obj[ 22 ] == null ? "" : obj[ 22 ].toString();
             dto.cnicNum = obj[ 23 ] == null ? "" : obj[ 23 ].toString();
@@ -304,6 +352,12 @@ public class ComplianceService {
             dto.crdtScr = obj[ 43 ] == null ? "" : obj[ 43 ].toString();
             dto.actKey = obj[ 44 ] == null ? "" : obj[ 44 ].toString();
             dto.prvBizActy = obj[ 45 ] == null ? "" : obj[ 45 ].toString();
+            dto.par1Day = obj[ 46 ] == null ? "" : obj[ 46 ].toString();
+            dto.par30Day = obj[ 47 ] == null ? "" : obj[ 47 ].toString();
+            dto.portCd = obj[ 48 ] == null ? "" : obj[ 48 ].toString();
+            dto.bdoNm = obj[ 49 ] == null ? "" : obj[ 49 ].toString();
+            dto.lastRotated = obj[ 50 ] == null ? "" : obj[ 50 ].toString();
+            dto.odInst = obj[ 51 ] == null ? "" : obj[ 51 ].toString();
 
 
             resp.add( dto );
@@ -501,9 +555,9 @@ public class ComplianceService {
     	return dto;
     }
     
-    public List<PrvVstDto> getPrvVst(){
+    public List<PrvVstDto> getPrvVst(Long brnchSeq){
     	String query =Queries.prev_vst;
-    	Query q=em.createNativeQuery(query);
+    	Query q=em.createNativeQuery(query).setParameter("Brnch_seq" , brnchSeq);
     	List<Object[]> result=q.getResultList();
     	List<PrvVstDto> resp=new ArrayList<PrvVstDto>();
     	for(Object[] obj:result) {

@@ -64,8 +64,20 @@ public class MwAdtCtgry implements Serializable {
 
     @Column ( name = "crnt_rec_flg" )
     private Boolean crntRecFlg;
+    
+    @Column ( name = "CTGRY_ENTY_FLG" )
+    private Integer ctgryEntyFlg;
+    
 
-    public Long getAdtCtgrySeq() {
+    public Integer getCtgryEntyFlg() {
+		return ctgryEntyFlg;
+	}
+
+	public void setCtgryEntyFlg(Integer ctgryEntyFlg) {
+		this.ctgryEntyFlg = ctgryEntyFlg;
+	}
+
+	public Long getAdtCtgrySeq() {
         return adtCtgrySeq;
     }
 
