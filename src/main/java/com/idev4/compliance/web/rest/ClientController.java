@@ -62,9 +62,9 @@ public class ClientController {
     public List<DVCDto> getDVCRegList() {
         return comp_Ser.getDvc_reg();
     }
-	@GetMapping("/getPrvVsts")
-    public List<PrvVstDto> getPrvVstList() {
-        return comp_Ser.getPrvVst();
+	@GetMapping("/getPrvVsts/{brnchSeq}")
+    public List<PrvVstDto> getPrvVstList(@PathVariable Long brnchSeq) {
+        return comp_Ser.getPrvVst(brnchSeq);
     }
 	
 	@GetMapping("/getDVCRegName/{id}")

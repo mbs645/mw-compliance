@@ -15,9 +15,9 @@ import com.idev4.compliance.ids.MwAppRconId;
 @Entity
 @Table ( name = "MW_APP_RCON" )
 @IdClass ( MwAppRconId.class )
-public class MwAppRcon implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class MwAppRcon implements Serializable  {
+	
+	 private static final long serialVersionUID = 1L;
 
     @Id
     @Column ( name = "APP_RCON_SEQ" )

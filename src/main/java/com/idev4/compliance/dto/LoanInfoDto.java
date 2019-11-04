@@ -8,7 +8,7 @@ public class LoanInfoDto {
 	public String occ;
 	public String cmntyNm; 
 	public String portNm;
-	public String odDays; 
+	public int odDays; 
 	public String prdSeq;
 	public String nkinFlg; 
 	public String bizChngFlg;
@@ -18,10 +18,10 @@ public class LoanInfoDto {
 	public String totFmlyMemb;
 	public String numOfErnrs; 
 	public String prdNm;
-	public String prevAmt; 
+	public int prevAmt; 
 	public String loanCyclNum;
 	public String rqstdLoanAmt; 
-	public String aprvdLoanAmt;
+	public int aprvdLoanAmt;
 	public String planNm; 
 	public String scrnFlg;
 	public String cnicNum; 
@@ -47,6 +47,15 @@ public class LoanInfoDto {
 	public String crdtScr;
 	public String actKey;
 	public String prvBizActy;
+	public String par1Day;
+	public String par30Day;
+	public String portCd;
+	public String bdoNm;
+	public String lastRotated;
+	public String odInst;
+
+
+
 
 
 

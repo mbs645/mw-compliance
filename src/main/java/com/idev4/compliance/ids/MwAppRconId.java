@@ -8,7 +8,8 @@ public class MwAppRconId implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Long appRconSeq;
+    public Long appRconSeq;
 
-    private Instant effStartDt;
+	public Instant effStartDt;
+
 }
