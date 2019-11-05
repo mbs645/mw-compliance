@@ -73,6 +73,17 @@ public class MwAdtVst implements Serializable {
 
     @Column(name = "crnt_rec_flg")
     private Boolean crntRecFlg;
+    
+    @Column(name = "TRGT_CLNT")
+    private Integer trgtClnt;
+
+	public Integer getTrgtClnt() {
+		return trgtClnt;
+	}
+
+	public void setTrgtClnt(Integer trgtClnt) {
+		this.trgtClnt = trgtClnt;
+	}
 
 	public Long getAdtVstSeq() {
 		return adtVstSeq;

@@ -10,4 +10,6 @@ public class AdtVstDto {
 	public Date endDt;
 	public Long assignedTo;
 	public Long adtFlg;
+	public Integer minNumCli;
+
 }

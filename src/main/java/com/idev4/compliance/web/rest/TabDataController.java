@@ -66,9 +66,9 @@ public class TabDataController {
 	        log.debug("REST request to get Data For Compliance");
 	        return ResponseEntity.ok().body(complianceService.getClientDataForTab(SecurityContextHolder.getContext().getAuthentication().getName(),brnchSeq));
 	    }
-	@PostMapping("/submit-compliance-data")
+	/*@PostMapping("/submit-compliance-data")
 	public ResponseEntity submitComplianceData(@RequestBody ComplianceSubmitDto dto) {
 		log.debug("REST request to submit-compliance-data ");
 		return complianceService.submitDataForCompliance(dto, SecurityContextHolder.getContext().getAuthentication().getName());
-	}
+	}*/
 }

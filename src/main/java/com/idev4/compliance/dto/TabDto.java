@@ -11,6 +11,7 @@ import com.idev4.compliance.domain.MwBrnch;
 import com.idev4.compliance.domain.MwEmp;
 import com.idev4.compliance.domain.MwQst;
 import com.idev4.compliance.domain.MwQstnr;
+import com.idev4.compliance.domain.MwRefCdGrp;
 import com.idev4.compliance.domain.MwRefCdVal;
 import com.idev4.compliance.dto.tab.MwAdtVstDto;
 import com.idev4.compliance.service.ComplianceService.PrvVstDto;
@@ -30,6 +31,8 @@ public class TabDto {
     public List< MwQst > mw_qst;
 
     public List< MwRefCdVal > mw_ref_cd_val;
+    
+    public List< MwRefCdGrp > mw_ref_cd_grp;
 
     public List< MwAdtVstDto > mw_adt_vst;
     

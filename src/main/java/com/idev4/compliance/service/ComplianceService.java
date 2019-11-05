@@ -49,6 +49,7 @@ import com.idev4.compliance.repository.MwEmpRepository;
 import com.idev4.compliance.repository.MwPortEmpRelRespository;
 import com.idev4.compliance.repository.MwQstRepository;
 import com.idev4.compliance.repository.MwQstnrRepository;
+import com.idev4.compliance.repository.MwRefCdGrpRepository;
 import com.idev4.compliance.repository.MwRefCdValRepository;
 import com.idev4.compliance.web.rest.util.Queries;
 import com.idev4.compliance.web.rest.util.SequenceFinder;
@@ -66,7 +67,9 @@ public class ComplianceService {
     private final MwAnswrRepository mwAnswrRepository;
 
     private final MwRefCdValRepository mwRefCdValRepository;
+    private final MwRefCdGrpRepository mwRefCdGrpRepository;
 
+    
     private final MwEmpRepository mwEmpRepository;
 
     private final MwBrnchRepository mwBrnchRepository;
@@ -104,8 +107,8 @@ public class ComplianceService {
             MwAnswrRepository mwAnswrRepository, MwRefCdValRepository mwRefCdValRepository, MwEmpRepository mwEmpRepository,
             MwBrnchRepository mwBrnchRepository, MwAdtVstRepository mwAdtVstRepository, MwAdtVstSrvyRepository mwAdtVstSrvyRepository,
             MwAdtFndngRepository mwAdtFndngRepository,MwBrnchEmpRelRepository mwbrnchEmpRelRepository,MwPortEmpRelRespository mwPortEmpRelRepository,MwDvcRgstrRepository mwDvcRgstryRepository 
-            ,MwAdtIsuRepository mwAdtIsuRepository,MwAdtCtgryRepository mwAdtCtgryRepository,MwAdtSbCtgryRepository mwAdtSbCtgryRepository,MwAppRconRepository  mwAppRconRepository
-            MwAdtBrnchRnkngRepository mwAdtBrnchRnkngRepository ) {
+            ,MwAdtIsuRepository mwAdtIsuRepository,MwAdtCtgryRepository mwAdtCtgryRepository,MwAdtSbCtgryRepository mwAdtSbCtgryRepository,MwAppRconRepository  mwAppRconRepository,
+            MwAdtBrnchRnkngRepository mwAdtBrnchRnkngRepository,MwRefCdGrpRepository mwRefCdGrpRepository ) {
         this.em = em;
         this.mwQstnrRepository = mwQstnrRepository;
         this.mwQstRepository = mwQstRepository;
@@ -124,6 +127,7 @@ public class ComplianceService {
         this.mwAdtSbCtgryRepository=mwAdtSbCtgryRepository;
         this.mwAppRconRepository=mwAppRconRepository;
         this.mwAdtBrnchRnkngRepository = mwAdtBrnchRnkngRepository;
+        this.mwRefCdGrpRepository=mwRefCdGrpRepository;
 
     }
 
@@ -136,6 +140,7 @@ public class ComplianceService {
         dto.mw_emp = mwEmpRepository.findAll();
         dto.mw_qstnr = mwQstnrRepository.findAllByCrntRecFlg( true );
         dto.mw_qst = mwQstRepository.findAllByDelFlgAndCrntRecFlg( false, true );
+        dto.mw_ref_cd_grp = mwRefCdGrpRepository.findAllByCrntRecFlg( true );
         dto.mw_ref_cd_val = mwRefCdValRepository.findAllByCrntRecFlgOrderByRefCdSeq( true );
         dto.mw_adt_isu = mwAdtIsuRepository.findAllByCrntRecFlg( true );
         dto.mw_adt_ctgry = mwAdtCtgryRepository.findAllByCrntRecFlg( true );
@@ -411,6 +416,7 @@ public class ComplianceService {
         vst.setLastUpdDt( Instant.now() );
         vst.setVstStsKey( pendingStsKey );
         vst.setVstId( String.format( "%04d", seq ) );
+        vst.setTrgtClnt(dto.minNumCli);
         mwAdtVstRepository.save( vst );
         return vst;
     }
