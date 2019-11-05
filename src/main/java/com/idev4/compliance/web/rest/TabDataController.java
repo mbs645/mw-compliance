@@ -66,21 +66,4 @@ public class TabDataController {
         return complianceService.submitDataForCompliance( dto, SecurityContextHolder.getContext().getAuthentication().getName() );
     }
 
-    @GetMapping ( "/calculate-score/{vstseq}/{brnch}" )
-    @Timed
-    public Long calculateScore( HttpServletResponse response, @PathVariable long vstseq, @PathVariable long brnch ) throws IOException {
-        return complianceService.calScore( vstseq, brnch );
-    }
-	 
-		@GetMapping("/compliance-adt-vst")
-	    public ResponseEntity< List<MwAdtVstDto> > getComplianceADTVstData() {
-	        log.debug("REST request to get Data For Compliance");
-	        return ResponseEntity.ok().body(complianceService.getADTVstDataForTab(SecurityContextHolder.getContext().getAuthentication().getName()));
-	    }
-		@GetMapping("/compliance-clnt-data/{brnchSeq}")
-	    public ResponseEntity<List<LoanInfoDto>> getComplianceClntData(@PathVariable Integer brnchSeq) {
-	        log.debug("REST request to get Data For Compliance");
-	        return ResponseEntity.ok().body(complianceService.getClientDataForTab(SecurityContextHolder.getContext().getAuthentication().getName(),brnchSeq));
-	    }
-	
 }
