@@ -1,3 +1,4 @@
+
 package com.idev4.compliance.domain;
 
 import java.io.Serializable;
@@ -12,66 +13,78 @@ import javax.persistence.Table;
 import com.idev4.compliance.ids.MwAdtVstId;
 
 @Entity
-@Table(name = "MW_ADT_VST")
-@IdClass(MwAdtVstId.class)
+@Table ( name = "MW_ADT_VST" )
+@IdClass ( MwAdtVstId.class )
 public class MwAdtVst implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "ADT_VST_SEQ")
+    @Column ( name = "ADT_VST_SEQ" )
     private Long adtVstSeq;
 
     @Id
-    @Column(name = "eff_start_dt")
+    @Column ( name = "eff_start_dt" )
     private Instant effStartDt;
-    
-    @Column(name = "BRNCH_SEQ")
+
+    @Column ( name = "BRNCH_SEQ" )
     private Long brnchSeq;
 
-    @Column(name = "VST_ID")
+    @Column ( name = "VST_ID" )
     private String vstId;
 
-    @Column(name = "START_DT")
+    @Column ( name = "START_DT" )
     private Instant strtDt;
-    
-    @Column(name = "END_DT")
+
+    @Column ( name = "END_DT" )
     private Instant endDt;
-    
-    @Column(name = "ACTL_START_DT")
+
+    @Column ( name = "ACTL_START_DT" )
     private Instant actlStrtDt;
-    
-    @Column(name = "ACTL_END_DT")
+
+    @Column ( name = "ACTL_END_DT" )
     private Instant actlEndDt;
-    
-    @Column(name = "ASGN_TO")
+
+    @Column ( name = "ASGN_TO" )
     private Long asgnTo;
-    
-    @Column(name = "VST_STS_KEY")
+
+    @Column ( name = "VST_STS_KEY" )
     private Long vstStsKey;
-    
-    @Column(name = "ADT_FLG")
+
+    @Column ( name = "DATA_CHK_DT" )
+    private Instant dataChkDt;
+
+    @Column ( name = "VST_SCR" )
+    private Long vstScr;
+
+    @Column ( name = "ADT_FLG" )
     private Long adtFlg;
-    
-    @Column(name = "crtd_by")
+
+    @Column ( name = "RNKNG" )
+    private Long rnkng;
+
+    @Column ( name = "TRGT_CLNT" )
+    private Long trgtClnt;
+
+    @Column ( name = "crtd_by" )
     private String crtdBy;
 
-    @Column(name = "crtd_dt")
+    @Column ( name = "crtd_dt" )
     private Instant crtdDt;
 
-    @Column(name = "last_upd_by")
+    @Column ( name = "last_upd_by" )
     private String lastUpdBy;
 
-    @Column(name = "last_upd_dt")
+    @Column ( name = "last_upd_dt" )
     private Instant lastUpdDt;
 
-    @Column(name = "del_flg")
+    @Column ( name = "del_flg" )
     private Boolean delFlg;
 
-    @Column(name = "eff_end_dt")
+    @Column ( name = "eff_end_dt" )
     private Instant effEndDt;
 
-    @Column(name = "crnt_rec_flg")
+    @Column ( name = "crnt_rec_flg" )
     private Boolean crntRecFlg;
     
     @Column(name = "TRGT_CLNT")
@@ -85,154 +98,184 @@ public class MwAdtVst implements Serializable {
 		this.trgtClnt = trgtClnt;
 	}
 
-	public Long getAdtVstSeq() {
-		return adtVstSeq;
-	}
+    public Long getAdtVstSeq() {
+        return adtVstSeq;
+    }
 
-	public void setAdtVstSeq(Long adtVstSeq) {
-		this.adtVstSeq = adtVstSeq;
-	}
+    public void setAdtVstSeq( Long adtVstSeq ) {
+        this.adtVstSeq = adtVstSeq;
+    }
 
-	public Instant getEffStartDt() {
-		return effStartDt;
-	}
+    public Instant getEffStartDt() {
+        return effStartDt;
+    }
 
-	public void setEffStartDt(Instant effStartDt) {
-		this.effStartDt = effStartDt;
-	}
+    public void setEffStartDt( Instant effStartDt ) {
+        this.effStartDt = effStartDt;
+    }
 
-	public Long getBrnchSeq() {
-		return brnchSeq;
-	}
+    public Long getBrnchSeq() {
+        return brnchSeq;
+    }
 
-	public void setBrnchSeq(Long brnchSeq) {
-		this.brnchSeq = brnchSeq;
-	}
+    public void setBrnchSeq( Long brnchSeq ) {
+        this.brnchSeq = brnchSeq;
+    }
 
-	public String getVstId() {
-		return vstId;
-	}
+    public String getVstId() {
+        return vstId;
+    }
 
-	public void setVstId(String vstId) {
-		this.vstId = vstId;
-	}
+    public void setVstId( String vstId ) {
+        this.vstId = vstId;
+    }
 
-	public Instant getStrtDt() {
-		return strtDt;
-	}
+    public Instant getStrtDt() {
+        return strtDt;
+    }
 
-	public void setStrtDt(Instant strtDt) {
-		this.strtDt = strtDt;
-	}
+    public void setStrtDt( Instant strtDt ) {
+        this.strtDt = strtDt;
+    }
 
-	public Instant getEndDt() {
-		return endDt;
-	}
+    public Instant getEndDt() {
+        return endDt;
+    }
 
-	public void setEndDt(Instant endDt) {
-		this.endDt = endDt;
-	}
+    public void setEndDt( Instant endDt ) {
+        this.endDt = endDt;
+    }
 
-	public Instant getActlStrtDt() {
-		return actlStrtDt;
-	}
+    public Instant getActlStrtDt() {
+        return actlStrtDt;
+    }
 
-	public void setActlStrtDt(Instant actlStrtDt) {
-		this.actlStrtDt = actlStrtDt;
-	}
+    public void setActlStrtDt( Instant actlStrtDt ) {
+        this.actlStrtDt = actlStrtDt;
+    }
 
-	public Instant getActlEndDt() {
-		return actlEndDt;
-	}
+    public Instant getActlEndDt() {
+        return actlEndDt;
+    }
 
-	public void setActlEndDt(Instant actlEndDt) {
-		this.actlEndDt = actlEndDt;
-	}
+    public void setActlEndDt( Instant actlEndDt ) {
+        this.actlEndDt = actlEndDt;
+    }
 
-	public Long getAsgnTo() {
-		return asgnTo;
-	}
+    public Long getAsgnTo() {
+        return asgnTo;
+    }
 
-	public void setAsgnTo(Long asgnTo) {
-		this.asgnTo = asgnTo;
-	}
+    public void setAsgnTo( Long asgnTo ) {
+        this.asgnTo = asgnTo;
+    }
 
-	public Long getVstStsKey() {
-		return vstStsKey;
-	}
+    public Long getVstStsKey() {
+        return vstStsKey;
+    }
 
-	public void setVstStsKey(Long vstStsKey) {
-		this.vstStsKey = vstStsKey;
-	}
+    public void setVstStsKey( Long vstStsKey ) {
+        this.vstStsKey = vstStsKey;
+    }
 
-	public Long getAdtFlg() {
-		return adtFlg;
-	}
+    public Instant getDataChkDt() {
+        return dataChkDt;
+    }
 
-	public void setAdtFlg(Long adtFlg) {
-		this.adtFlg = adtFlg;
-	}
+    public void setDataChkDt( Instant dataChkDt ) {
+        this.dataChkDt = dataChkDt;
+    }
 
-	public String getCrtdBy() {
-		return crtdBy;
-	}
+    public Long getVstScr() {
+        return vstScr;
+    }
 
-	public void setCrtdBy(String crtdBy) {
-		this.crtdBy = crtdBy;
-	}
+    public void setVstScr( Long vstScr ) {
+        this.vstScr = vstScr;
+    }
 
-	public Instant getCrtdDt() {
-		return crtdDt;
-	}
+    public Long getAdtFlg() {
+        return adtFlg;
+    }
 
-	public void setCrtdDt(Instant crtdDt) {
-		this.crtdDt = crtdDt;
-	}
+    public void setAdtFlg( Long adtFlg ) {
+        this.adtFlg = adtFlg;
+    }
 
-	public String getLastUpdBy() {
-		return lastUpdBy;
-	}
+    public Long getRnkng() {
+        return rnkng;
+    }
 
-	public void setLastUpdBy(String lastUpdBy) {
-		this.lastUpdBy = lastUpdBy;
-	}
+    public void setRnkng( Long rnkng ) {
+        this.rnkng = rnkng;
+    }
 
-	public Instant getLastUpdDt() {
-		return lastUpdDt;
-	}
+    public Long getTrgtClnt() {
+        return trgtClnt;
+    }
 
-	public void setLastUpdDt(Instant lastUpdDt) {
-		this.lastUpdDt = lastUpdDt;
-	}
+    public void setTrgtClnt( Long trgtClnt ) {
+        this.trgtClnt = trgtClnt;
+    }
 
-	public Boolean getDelFlg() {
-		return delFlg;
-	}
+    public String getCrtdBy() {
+        return crtdBy;
+    }
 
-	public void setDelFlg(Boolean delFlg) {
-		this.delFlg = delFlg;
-	}
+    public void setCrtdBy( String crtdBy ) {
+        this.crtdBy = crtdBy;
+    }
 
-	public Instant getEffEndDt() {
-		return effEndDt;
-	}
+    public Instant getCrtdDt() {
+        return crtdDt;
+    }
 
-	public void setEffEndDt(Instant effEndDt) {
-		this.effEndDt = effEndDt;
-	}
+    public void setCrtdDt( Instant crtdDt ) {
+        this.crtdDt = crtdDt;
+    }
 
-	public Boolean getCrntRecFlg() {
-		return crntRecFlg;
-	}
+    public String getLastUpdBy() {
+        return lastUpdBy;
+    }
 
-	public void setCrntRecFlg(Boolean crntRecFlg) {
-		this.crntRecFlg = crntRecFlg;
-	}
+    public void setLastUpdBy( String lastUpdBy ) {
+        this.lastUpdBy = lastUpdBy;
+    }
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
+    public Instant getLastUpdDt() {
+        return lastUpdDt;
+    }
 
-	
+    public void setLastUpdDt( Instant lastUpdDt ) {
+        this.lastUpdDt = lastUpdDt;
+    }
+
+    public Boolean getDelFlg() {
+        return delFlg;
+    }
+
+    public void setDelFlg( Boolean delFlg ) {
+        this.delFlg = delFlg;
+    }
+
+    public Instant getEffEndDt() {
+        return effEndDt;
+    }
+
+    public void setEffEndDt( Instant effEndDt ) {
+        this.effEndDt = effEndDt;
+    }
+
+    public Boolean getCrntRecFlg() {
+        return crntRecFlg;
+    }
+
+    public void setCrntRecFlg( Boolean crntRecFlg ) {
+        this.crntRecFlg = crntRecFlg;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
 
 }

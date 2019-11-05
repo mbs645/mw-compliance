@@ -12,11 +12,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.idev4.compliance.domain.MwAdtBrnchRnkng;
 import com.idev4.compliance.domain.MwAdtFndng;
 import com.idev4.compliance.domain.MwAdtVst;
 import com.idev4.compliance.domain.MwAdtVstSrvy;
@@ -642,8 +640,7 @@ public class ComplianceService {
         public String loanId;
     }
 
-    @Async
-    public Long calScore( Long vstSeq, Long brnchSeq ) {
+    public void calScore( Long vstSeq, Long brnchSeq ) {
 
         // Long brnchScr = mwAdtFndngRepository.getVstScrSum( vstSeq );
         // List< MwAdtBrnchRnkng > brnchRnkngList = mwAdtBrnchRnkngRepository.findOneByBrnchSeqAndCrntRecFlg( brnchSeq, true );
@@ -693,7 +690,7 @@ public class ComplianceService {
                 + "where fnding.CRNT_REC_FLG = 1 and fnding.ADT_VST_SEQ=:vstSeq\r\n" + "group by ctg.ADT_CTGRY_SEQ,fnding.ADT_VST_SEQ " )
                 .setParameter( "vstSeq", vstSeq );
 
-        List< Object[] > ob = rs.getResultList();
+        List< Object[] > ob = res.getResultList();
 
         for ( Object[] b : ob ) {
 
@@ -714,23 +711,28 @@ public class ComplianceService {
             }
 
         }
+        //
+        // MwAdtVst brnchRnk = mwAdtVstRepository.findOneBybrnchSeqAndCrntRecFlg( brnchSeq, true );
+        // if ( brnchRnk != null ) {
+        // brnchRnk.setCrntRecFlg( false );
+        // mwAdtVstRepository.save( brnchRnk );
+        // }
+        // MwAdtBrnchRnkng b = new MwAdtBrnchRnkng();
+        // Long seq = SequenceFinder.findNextVal( Sequences.ADT_BRNCH_RKNG_SEQ );
+        // b.setAdtBrcnhRnkgSeq( seq );
+        // b.setBrnchSeq( brnchSeq );
+        // b.setLstVstSeq( vstSeq );
+        // b.setRnkngDte( Instant.now() );
+        // b.setBrnchScr( 100 - ( totalSum + totalSum1 ) );
+        // b.setCrntRecFlg( true );
+        // mwAdtBrnchRnkngRepository.save( b );
 
-        MwAdtBrnchRnkng brnchRnk = mwAdtBrnchRnkngRepository.findOneByBrnchSeqAndCrntRecFlg( brnchSeq, true );
-        if ( brnchRnk != null ) {
-            brnchRnk.setCrntRecFlg( false );
-            mwAdtBrnchRnkngRepository.save( brnchRnk );
+        MwAdtVst vst = new MwAdtVst();
+        MwAdtVst seq = mwAdtVstRepository.findOneByAdtVstSeqAndCrntRecFlg( vstSeq, true );
+        if ( seq != null ) {
+            seq.setVstScr( 100 - ( totalSum + totalSum1 ) );
+            mwAdtVstRepository.save( seq );
         }
-        MwAdtBrnchRnkng b = new MwAdtBrnchRnkng();
-        Long seq = SequenceFinder.findNextVal( Sequences.ADT_BRNCH_RKNG_SEQ );
-        b.setAdtBrcnhRnkgSeq( seq );
-        b.setBrnchSeq( brnchSeq );
-        b.setLstVstSeq( vstSeq );
-        b.setRnkngDte( Instant.now() );
-        b.setBrnchScr( 100 - ( totalSum + totalSum1 ) );
-        b.setCrntRecFlg( true );
-        mwAdtBrnchRnkngRepository.save( b );
-
-        return ( 100 - ( totalSum + totalSum1 ) );
 
     }
 }
