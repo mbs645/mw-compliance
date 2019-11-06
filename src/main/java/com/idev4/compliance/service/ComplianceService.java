@@ -89,7 +89,8 @@ public class ComplianceService {
     private final MwAdtCtgryRepository mwAdtCtgryRepository;
 
     private final MwAdtSbCtgryRepository mwAdtSbCtgryRepository;
-    private final MwAppRconRepository  mwAppRconRepository;
+
+    private final MwAppRconRepository mwAppRconRepository;
 
     private final MwAdtBrnchRnkngRepository mwAdtBrnchRnkngRepository;
 
@@ -120,10 +121,10 @@ public class ComplianceService {
         this.mwbrnchEmpRelRepository = mwbrnchEmpRelRepository;
         this.mwPortEmpRelRepository = mwPortEmpRelRepository;
         this.mwDvcRgstryRepository = mwDvcRgstryRepository;
-        this.mwAdtIsuRepository=mwAdtIsuRepository;
-        this.mwAdtCtgryRepository=mwAdtCtgryRepository;
-        this.mwAdtSbCtgryRepository=mwAdtSbCtgryRepository;
-        this.mwAppRconRepository=mwAppRconRepository;
+        this.mwAdtIsuRepository = mwAdtIsuRepository;
+        this.mwAdtCtgryRepository = mwAdtCtgryRepository;
+        this.mwAdtSbCtgryRepository = mwAdtSbCtgryRepository;
+        this.mwAppRconRepository = mwAppRconRepository;
         this.mwAdtBrnchRnkngRepository = mwAdtBrnchRnkngRepository;
         this.mwRefCdGrpRepository=mwRefCdGrpRepository;
 
@@ -131,8 +132,8 @@ public class ComplianceService {
 
     public TabDto getDataForTab( String lanId ) {
         TabDto dto = new TabDto();
-        //dto.mw_prv_vst=getPrvVst();
-       // dto.app_info = complianceData();
+        // dto.mw_prv_vst=getPrvVst();
+        // dto.app_info = complianceData();
         dto.mw_answr = mwAnswrRepository.findAllByDelFlgAndCrntRecFlg( false, true );
         dto.mw_brnch = mwBrnchRepository.findAllByCrntRecFlg( true );
         dto.mw_emp = mwEmpRepository.findAll();
@@ -155,33 +156,35 @@ public class ComplianceService {
         }
         return dto;
     }
-    public List<MwAdtVstDto> getADTVstDataForTab( String lanId ) {
-    	List<MwAdtVstDto> dto = new ArrayList<>();
-      
+
+    public List< MwAdtVstDto > getADTVstDataForTab( String lanId ) {
+        List< MwAdtVstDto > dto = new ArrayList<>();
+
         MwEmp emp = mwEmpRepository.findOneByEmpLanId( lanId );
         if ( emp != null ) {
             List< MwAdtVst > mw_adt_vsts = mwAdtVstRepository.findAllByAsgnToAndCrntRecFlg( emp.getEmpSeq(), true );
-           // dto = new ArrayList<>();
-            for(MwAdtVst vst : mw_adt_vsts) {
+            // dto = new ArrayList<>();
+            for ( MwAdtVst vst : mw_adt_vsts ) {
                 MwAdtVstDto sdto = new MwAdtVstDto();
                 sdto.DomainToDto( vst );
                 dto.add( sdto );
-            } 
+            }
         }
         return dto;
     }
-    
-    public List<LoanInfoDto> getClientDataForTab( String lanId,Integer brnchSeq ) {
-    	List< LoanInfoDto > app_info  = new ArrayList<>();
-      
-    	app_info = complianceData(brnchSeq);
+
+    public List< LoanInfoDto > getClientDataForTab( String lanId, Integer brnchSeq ) {
+        List< LoanInfoDto > app_info = new ArrayList<>();
+
+        app_info = complianceData( brnchSeq );
 
         return app_info;
     }
+
     public TabDto getDataFor() {
         TabDto dto = new TabDto();
-        dto.mw_prv_vst=getPrvVst(98L);
-        dto.app_info = complianceData(1);
+        dto.mw_prv_vst = getPrvVst( 98L );
+        dto.app_info = complianceData( 1 );
         return dto;
     }
 
@@ -251,7 +254,7 @@ public class ComplianceService {
         vst.setActlEndDt( Instant.now() );
         vst.setLastUpdBy( curUser );
         vst.setLastUpdDt( Instant.now() );
-        vst.setVstStsKey(complSts);
+        vst.setVstStsKey( complSts );
 
         if ( dto.mw_adt_vst_srvy != null ) {
             dto.mw_adt_vst_srvy.forEach( srvDto -> {
@@ -272,7 +275,7 @@ public class ComplianceService {
         if ( dto.mw_adt_fndng != null ) {
             dto.mw_adt_fndng.forEach( fndDto -> {
                 if ( fndDto.adt_fndng_seq != null ) {
-                	MwAdtFndng exFnd = mwAdtFndngRepository.findOneByAdtFndngSeqAndCrntRecFlg( fndDto.adt_fndng_seq, true );
+                    MwAdtFndng exFnd = mwAdtFndngRepository.findOneByAdtFndngSeqAndCrntRecFlg( fndDto.adt_fndng_seq, true );
                     if ( exFnd != null ) {
                         exFnd.setCrntRecFlg( false );
                         exFnd.setDelFlg( true );
@@ -285,11 +288,11 @@ public class ComplianceService {
                 }
             } );
         }
-        
+
         if ( dto.mw_app_rcon != null ) {
             dto.mw_app_rcon.forEach( rconDto -> {
                 if ( rconDto.app_rcon_seq != null ) {
-                	MwAppRcon appRcon = mwAppRconRepository.findOneByAppRconSeqAndCrntRecFlg( rconDto.app_rcon_seq, true );
+                    MwAppRcon appRcon = mwAppRconRepository.findOneByAppRconSeqAndCrntRecFlg( rconDto.app_rcon_seq, true );
                     if ( appRcon != null ) {
                         appRcon.setCrntRecFlg( false );
                         appRcon.setDelFlg( true );
@@ -303,16 +306,15 @@ public class ComplianceService {
                 }
             } );
         }
-        
-       
+
         calScore( vst.getAdtVstSeq(), vst.getBrnchSeq() );
         return ResponseEntity.ok().body( "{\"body\":\"Success\"}" );
     }
 
-    public List< LoanInfoDto > complianceData(Integer brnchSeq) {
+    public List< LoanInfoDto > complianceData( Integer brnchSeq ) {
         String query = Queries.complianceLoansQuery;
-        Query q = em.createNativeQuery( query ).setParameter("Brnch_seq" , brnchSeq);
-        q.setMaxResults( 100 );
+        Query q = em.createNativeQuery( query ).setParameter( "Brnch_seq", brnchSeq );
+        // q.setMaxResults( 100 );
         List< Object[] > result = q.getResultList();
         List< LoanInfoDto > resp = new ArrayList< LoanInfoDto >();
         for ( Object[] obj : result ) {
@@ -324,7 +326,7 @@ public class ComplianceService {
             dto.occ = obj[ 4 ] == null ? "" : obj[ 4 ].toString();
             dto.cmntyNm = obj[ 5 ] == null ? "" : obj[ 5 ].toString();
             dto.portNm = obj[ 6 ] == null ? "" : obj[ 6 ].toString();
-            dto.odDays = obj[ 7 ] == null ? 0 :((BigDecimal) obj[ 7 ]).intValue();
+            dto.odDays = obj[ 7 ] == null ? 0 : ( ( BigDecimal ) obj[ 7 ] ).intValue();
             dto.prdSeq = obj[ 8 ] == null ? "" : obj[ 8 ].toString();
             dto.nkinFlg = obj[ 9 ] == null ? "" : obj[ 9 ].toString();
             dto.bizChngFlg = obj[ 10 ] == null ? "" : obj[ 10 ].toString();
@@ -334,10 +336,10 @@ public class ComplianceService {
             dto.totFmlyMemb = obj[ 14 ] == null ? "" : obj[ 14 ].toString();
             dto.numOfErnrs = obj[ 15 ] == null ? "" : obj[ 15 ].toString();
             dto.prdNm = obj[ 16 ] == null ? "" : obj[ 16 ].toString();
-            dto.prevAmt = obj[ 17 ] == null ? 0 : ((BigDecimal) obj[ 17 ]).intValue();
+            dto.prevAmt = obj[ 17 ] == null ? 0 : ( ( BigDecimal ) obj[ 17 ] ).intValue();
             dto.loanCyclNum = obj[ 18 ] == null ? "" : obj[ 18 ].toString();
             dto.rqstdLoanAmt = obj[ 19 ] == null ? "" : obj[ 19 ].toString();
-            dto.aprvdLoanAmt = obj[ 20 ] == null ?0 : ((BigDecimal) obj[ 20 ]).intValue();
+            dto.aprvdLoanAmt = obj[ 20 ] == null ? 0 : ( ( BigDecimal ) obj[ 20 ] ).intValue();
             dto.planNm = obj[ 21 ] == null ? "" : obj[ 21 ].toString();
             dto.scrnFlg = obj[ 22 ] == null ? "" : obj[ 22 ].toString();
             dto.cnicNum = obj[ 23 ] == null ? "" : obj[ 23 ].toString();
@@ -564,31 +566,30 @@ public class ComplianceService {
         }
         return dto;
     }
-    
-    public List<PrvVstDto> getPrvVst(Long brnchSeq){
-    	String query =Queries.prev_vst;
-    	Query q=em.createNativeQuery(query).setParameter("Brnch_seq" , brnchSeq);
-    	List<Object[]> result=q.getResultList();
-    	List<PrvVstDto> resp=new ArrayList<PrvVstDto>();
-    	for(Object[] obj:result) {
-    		PrvVstDto dto=new PrvVstDto();
-    		dto.vstId=obj[0]==null?"": obj[0].toString();
-    		dto.rnkng=obj[1]==null?"": obj[1].toString();
-	    	dto.vstScr=obj[2]==null?"": obj[2].toString();
-	    	dto.lstVstDt=obj[3]==null?"": obj[3].toString();
-	    	dto.lstVstBy=obj[4]==null?"": obj[4].toString();
 
-	    	dto.dataChkDt=obj[5]==null?"": obj[5].toString();
-	    	dto.portCd=obj[6]==null?"": obj[6].toString();
-	    	dto.portNm=obj[7]==null?"": obj[7].toString();
-	    	dto.empNm=obj[8]==null?"": obj[8].toString();
-	    	dto.clntVstd=obj[9]==null?"": obj[9].toString();
-	    	dto.cmntCnt=obj[10]==null?"": obj[10].toString();
-    		resp.add(dto);
+    public List< PrvVstDto > getPrvVst( Long brnchSeq ) {
+        String query = Queries.prev_vst;
+        Query q = em.createNativeQuery( query ).setParameter( "Brnch_seq", brnchSeq );
+        List< Object[] > result = q.getResultList();
+        List< PrvVstDto > resp = new ArrayList< PrvVstDto >();
+        for ( Object[] obj : result ) {
+            PrvVstDto dto = new PrvVstDto();
+            dto.vstId = obj[ 0 ] == null ? "" : obj[ 0 ].toString();
+            dto.rnkng = obj[ 1 ] == null ? "" : obj[ 1 ].toString();
+            dto.vstScr = obj[ 2 ] == null ? "" : obj[ 2 ].toString();
+            dto.lstVstDt = obj[ 3 ] == null ? "" : obj[ 3 ].toString();
+            dto.lstVstBy = obj[ 4 ] == null ? "" : obj[ 4 ].toString();
 
+            dto.dataChkDt = obj[ 5 ] == null ? "" : obj[ 5 ].toString();
+            dto.portCd = obj[ 6 ] == null ? "" : obj[ 6 ].toString();
+            dto.portNm = obj[ 7 ] == null ? "" : obj[ 7 ].toString();
+            dto.empNm = obj[ 8 ] == null ? "" : obj[ 8 ].toString();
+            dto.clntVstd = obj[ 9 ] == null ? "" : obj[ 9 ].toString();
+            dto.cmntCnt = obj[ 10 ] == null ? "" : obj[ 10 ].toString();
+            resp.add( dto );
 
-    	}
-    	return resp;
+        }
+        return resp;
     }
 
     public class PrvVstDto {
