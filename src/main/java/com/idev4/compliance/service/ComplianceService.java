@@ -65,9 +65,9 @@ public class ComplianceService {
     private final MwAnswrRepository mwAnswrRepository;
 
     private final MwRefCdValRepository mwRefCdValRepository;
+
     private final MwRefCdGrpRepository mwRefCdGrpRepository;
 
-    
     private final MwEmpRepository mwEmpRepository;
 
     private final MwBrnchRepository mwBrnchRepository;
@@ -105,9 +105,11 @@ public class ComplianceService {
     public ComplianceService( EntityManager em, MwQstnrRepository mwQstnrRepository, MwQstRepository mwQstRepository,
             MwAnswrRepository mwAnswrRepository, MwRefCdValRepository mwRefCdValRepository, MwEmpRepository mwEmpRepository,
             MwBrnchRepository mwBrnchRepository, MwAdtVstRepository mwAdtVstRepository, MwAdtVstSrvyRepository mwAdtVstSrvyRepository,
-            MwAdtFndngRepository mwAdtFndngRepository,MwBrnchEmpRelRepository mwbrnchEmpRelRepository,MwPortEmpRelRespository mwPortEmpRelRepository,MwDvcRgstrRepository mwDvcRgstryRepository 
-            ,MwAdtIsuRepository mwAdtIsuRepository,MwAdtCtgryRepository mwAdtCtgryRepository,MwAdtSbCtgryRepository mwAdtSbCtgryRepository,MwAppRconRepository  mwAppRconRepository,
-            MwAdtBrnchRnkngRepository mwAdtBrnchRnkngRepository,MwRefCdGrpRepository mwRefCdGrpRepository ) {
+            MwAdtFndngRepository mwAdtFndngRepository, MwBrnchEmpRelRepository mwbrnchEmpRelRepository,
+            MwPortEmpRelRespository mwPortEmpRelRepository, MwDvcRgstrRepository mwDvcRgstryRepository,
+            MwAdtIsuRepository mwAdtIsuRepository, MwAdtCtgryRepository mwAdtCtgryRepository, MwAdtSbCtgryRepository mwAdtSbCtgryRepository,
+            MwAppRconRepository mwAppRconRepository, MwAdtBrnchRnkngRepository mwAdtBrnchRnkngRepository,
+            MwRefCdGrpRepository mwRefCdGrpRepository ) {
         this.em = em;
         this.mwQstnrRepository = mwQstnrRepository;
         this.mwQstRepository = mwQstRepository;
@@ -126,7 +128,7 @@ public class ComplianceService {
         this.mwAdtSbCtgryRepository = mwAdtSbCtgryRepository;
         this.mwAppRconRepository = mwAppRconRepository;
         this.mwAdtBrnchRnkngRepository = mwAdtBrnchRnkngRepository;
-        this.mwRefCdGrpRepository=mwRefCdGrpRepository;
+        this.mwRefCdGrpRepository = mwRefCdGrpRepository;
 
     }
 
@@ -416,7 +418,7 @@ public class ComplianceService {
         vst.setLastUpdDt( Instant.now() );
         vst.setVstStsKey( pendingStsKey );
         vst.setVstId( String.format( "%04d", seq ) );
-        vst.setTrgtClnt((long)dto.minNumCli);
+        vst.setTrgtClnt( ( long ) dto.minNumCli );
         mwAdtVstRepository.save( vst );
         return vst;
     }
