@@ -82,7 +82,7 @@ public class Queries {
 			"						                         othc.pymt_sched_dtl_seq=psd.pymt_sched_dtl_seq  \r\n" + 
 			"						        group by psh.loan_app_seq  \r\n" + 
 			"						) dsbmt on dsbmt.loan_app_seq=ap.loan_app_seq  \r\n" + 
-			"						where ap.crnt_rec_flg=1";
+			"						where ap.crnt_rec_flg=1 and ap.loan_app_sts=703";
 	
 	
 	public static String complianceLandingQuery = "SELECT\r\n" + 

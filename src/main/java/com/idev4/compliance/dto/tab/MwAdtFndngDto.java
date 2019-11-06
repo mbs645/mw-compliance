@@ -39,7 +39,15 @@ public class MwAdtFndngDto {
 
 	public String eff_end_dt;
 
+	
+	public Long adt_vst_seq;
+	
+	public Long scr;
+	public Long svrtyKey;
+
+
 	public Integer crnt_rec_flg;
+
 
 	public MwAdtFndng DtoToDomain(DateFormat formatter, DateFormat simpleFormatter) {
 		MwAdtFndng fnd = new MwAdtFndng();
@@ -53,6 +61,10 @@ public class MwAdtFndngDto {
 		fnd.setFindingTypKey(finding_typ_key);
 		fnd.setIssueKey(issue_key);
 		fnd.setLastUpdBy(last_upd_by);
+		fnd.setAdtVstSeq(adt_vst_seq);
+		fnd.setScr(scr);
+		fnd.setSvrtyKey(svrtyKey);
+		
 		try {
 			fnd.setLastUpdDt(Instant.now());
 			fnd.setEffStartDt((eff_start_dt == null) ? Instant.now()
@@ -80,6 +92,10 @@ public class MwAdtFndngDto {
 		eff_end_dt = (fnd.getEffEndDt() == null) ? "" : Common.GetFormattedDateForTab(fnd.getEffEndDt(), false);
 		crnt_rec_flg = (fnd.getCrntRecFlg() == null) ? 0 : (fnd.getCrntRecFlg() ? 1 : 0);
 		del_flg = (fnd.getDelFlg() == null) ? 0 : (fnd.getDelFlg() ? 1 : 0);
+		adt_vst_seq=fnd.getAdtVstSeq();
+		scr=fnd.getScr();
+		svrtyKey=fnd.getSvrtyKey();
+		
 	}
 
 }

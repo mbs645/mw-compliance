@@ -414,7 +414,7 @@ public class ComplianceService {
         vst.setLastUpdDt( Instant.now() );
         vst.setVstStsKey( pendingStsKey );
         vst.setVstId( String.format( "%04d", seq ) );
-        vst.setTrgtClnt(dto.minNumCli);
+        vst.setTrgtClnt((long)dto.minNumCli);
         mwAdtVstRepository.save( vst );
         return vst;
     }

@@ -43,6 +43,9 @@ public class MwAdtVstDto {
     public String eff_end_dt;
 
     public Integer crnt_rec_flg;
+    
+    public Long trgt_clnt;
+
 
     public MwAdtVst DtoToDomain( DateFormat formatter, DateFormat simpleFormatter ) {
         MwAdtVst dom = new MwAdtVst();
@@ -69,5 +72,6 @@ public class MwAdtVstDto {
         asgn_to = dom.getAsgnTo();
         vst_sts_key = dom.getVstStsKey();
         adt_flg = dom.getAdtFlg();
+        trgt_clnt=dom.getTrgtClnt();
     }
 }
