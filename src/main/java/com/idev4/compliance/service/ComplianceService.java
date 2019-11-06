@@ -65,9 +65,9 @@ public class ComplianceService {
     private final MwAnswrRepository mwAnswrRepository;
 
     private final MwRefCdValRepository mwRefCdValRepository;
+
     private final MwRefCdGrpRepository mwRefCdGrpRepository;
 
-    
     private final MwEmpRepository mwEmpRepository;
 
     private final MwBrnchRepository mwBrnchRepository;
@@ -105,9 +105,11 @@ public class ComplianceService {
     public ComplianceService( EntityManager em, MwQstnrRepository mwQstnrRepository, MwQstRepository mwQstRepository,
             MwAnswrRepository mwAnswrRepository, MwRefCdValRepository mwRefCdValRepository, MwEmpRepository mwEmpRepository,
             MwBrnchRepository mwBrnchRepository, MwAdtVstRepository mwAdtVstRepository, MwAdtVstSrvyRepository mwAdtVstSrvyRepository,
-            MwAdtFndngRepository mwAdtFndngRepository,MwBrnchEmpRelRepository mwbrnchEmpRelRepository,MwPortEmpRelRespository mwPortEmpRelRepository,MwDvcRgstrRepository mwDvcRgstryRepository 
-            ,MwAdtIsuRepository mwAdtIsuRepository,MwAdtCtgryRepository mwAdtCtgryRepository,MwAdtSbCtgryRepository mwAdtSbCtgryRepository,MwAppRconRepository  mwAppRconRepository,
-            MwAdtBrnchRnkngRepository mwAdtBrnchRnkngRepository,MwRefCdGrpRepository mwRefCdGrpRepository ) {
+            MwAdtFndngRepository mwAdtFndngRepository, MwBrnchEmpRelRepository mwbrnchEmpRelRepository,
+            MwPortEmpRelRespository mwPortEmpRelRepository, MwDvcRgstrRepository mwDvcRgstryRepository,
+            MwAdtIsuRepository mwAdtIsuRepository, MwAdtCtgryRepository mwAdtCtgryRepository, MwAdtSbCtgryRepository mwAdtSbCtgryRepository,
+            MwAppRconRepository mwAppRconRepository, MwAdtBrnchRnkngRepository mwAdtBrnchRnkngRepository,
+            MwRefCdGrpRepository mwRefCdGrpRepository ) {
         this.em = em;
         this.mwQstnrRepository = mwQstnrRepository;
         this.mwQstRepository = mwQstRepository;
@@ -126,7 +128,7 @@ public class ComplianceService {
         this.mwAdtSbCtgryRepository = mwAdtSbCtgryRepository;
         this.mwAppRconRepository = mwAppRconRepository;
         this.mwAdtBrnchRnkngRepository = mwAdtBrnchRnkngRepository;
-        this.mwRefCdGrpRepository=mwRefCdGrpRepository;
+        this.mwRefCdGrpRepository = mwRefCdGrpRepository;
 
     }
 
@@ -416,7 +418,7 @@ public class ComplianceService {
         vst.setLastUpdDt( Instant.now() );
         vst.setVstStsKey( pendingStsKey );
         vst.setVstId( String.format( "%04d", seq ) );
-        vst.setTrgtClnt((long)dto.minNumCli);
+        vst.setTrgtClnt( ( long ) dto.minNumCli );
         mwAdtVstRepository.save( vst );
         return vst;
     }
@@ -656,8 +658,8 @@ public class ComplianceService {
                 + "join MW_ADT_SB_CTGRY sctg on sctg.ADT_CTGRY_SEQ = isu.ADT_ISU_SEQ AND sctg.CRNT_REC_FLG = 1\r\n"
                 + "join MW_ADT_CTGRY ctg on ctg.ADT_CTGRY_SEQ = sctg.ADT_CTGRY_SEQ AND ctg.CRNT_REC_FLG = 1 AND ctg.CTGRY_ENTY_FLG =1\r\n"
                 + "--join MW_ADT_VST_SRVY avs on avs.ADT_VST_SEQ = fnding.ADT_VST_SEQ and avs.CRNT_REC_FLG = 1\r\n"
-                + "where fnding.CRNT_REC_FLG = 1 and fnding.ADT_VST_SEQ=:vstSeq\r\n" + "group by ctg.ADT_CTGRY_SEQ,fnding.ADT_VST_SEQ " )
-                .setParameter( "vstSeq", vstSeq );
+                + "where fnding.CRNT_REC_FLG = 1 and fnding.ADT_VST_SEQ=:vstSeq\r\n" + "and fnding.finding_typ_key=0\r\n"
+                + "group by ctg.ADT_CTGRY_SEQ,fnding.ADT_VST_SEQ " ).setParameter( "vstSeq", vstSeq );
 
         List< Object[] > obj = rs.getResultList();
 
@@ -682,14 +684,14 @@ public class ComplianceService {
         }
 
         long totalSum1 = 0L;
-        Query res = em.createNativeQuery( "select ctg.ADT_CTGRY_SEQ,round(count(fnding.issue_key)/\r\n"
-                + "(select count(ENTY_SEQ) from MW_ADT_VST_SRVY avs where avs.ADT_VST_SEQ=fnding.ADT_VST_SEQ and avs.enty_typ_flg=1) *100,0) as cal_score \r\n"
-                + "from MW_ADT_FNDNG fnding \r\n" + "join MW_ADT_ISU isu on isu.ISU_ID = fnding.ISSUE_KEY AND isu.CRNT_REC_FLG = 1\r\n"
-                + "join MW_ADT_SB_CTGRY sctg on sctg.ADT_CTGRY_SEQ = isu.ADT_ISU_SEQ AND sctg.CRNT_REC_FLG = 1\r\n"
-                + "join MW_ADT_CTGRY ctg on ctg.ADT_CTGRY_SEQ = sctg.ADT_CTGRY_SEQ AND ctg.CRNT_REC_FLG = 1 AND ctg.CTGRY_ENTY_FLG =2\r\n"
-                + "--join MW_ADT_VST_SRVY avs on avs.ADT_VST_SEQ = fnding.ADT_VST_SEQ and avs.CRNT_REC_FLG = 1\r\n"
-                + "where fnding.CRNT_REC_FLG = 1 and fnding.ADT_VST_SEQ=:vstSeq\r\n" + "group by ctg.ADT_CTGRY_SEQ,fnding.ADT_VST_SEQ " )
-                .setParameter( "vstSeq", vstSeq );
+        Query res = em.createNativeQuery( " select ctg.ADT_CTGRY_SEQ,round(count(fnding.issue_key)/ \r\n"
+                + "  (select count(ENTY_SEQ) from MW_ADT_VST_SRVY avs where avs.ADT_VST_SEQ=fnding.ADT_VST_SEQ and avs.enty_typ_flg=1) *100,0) as cal_score  \r\n"
+                + "  from MW_ADT_FNDNG fnding    join MW_ADT_ISU isu on isu.ISU_ID = fnding.ISSUE_KEY AND isu.CRNT_REC_FLG = 1 \r\n"
+                + "join MW_ADT_SB_CTGRY sctg on sctg.ADT_CTGRY_SEQ = isu.ADT_ISU_SEQ AND sctg.CRNT_REC_FLG = 1 \r\n"
+                + "join MW_ADT_CTGRY ctg on ctg.ADT_CTGRY_SEQ = sctg.ADT_CTGRY_SEQ AND ctg.CRNT_REC_FLG = 1 AND ctg.CTGRY_ENTY_FLG =2 \r\n"
+                + "--join MW_ADT_VST_SRVY avs on avs.ADT_VST_SEQ = fnding.ADT_VST_SEQ and avs.CRNT_REC_FLG = 1 \r\n"
+                + " where fnding.CRNT_REC_FLG = 1 and fnding.ADT_VST_SEQ=:vstSeq   \r\n" + " and fnding.finding_typ_key=0\r\n"
+                + " group by ctg.ADT_CTGRY_SEQ,fnding.ADT_VST_SEQ " ).setParameter( "vstSeq", vstSeq );
 
         List< Object[] > ob = res.getResultList();
 

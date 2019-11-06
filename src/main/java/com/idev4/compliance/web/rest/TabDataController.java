@@ -1,10 +1,7 @@
 
 package com.idev4.compliance.web.rest;
 
-import java.io.IOException;
 import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.codahale.metrics.annotation.Timed;
 import com.idev4.compliance.dto.LoanInfoDto;
 import com.idev4.compliance.dto.TabDto;
 import com.idev4.compliance.dto.tab.ComplianceSubmitDto;
@@ -70,17 +66,17 @@ public class TabDataController {
         return complianceService.submitDataForCompliance( dto, SecurityContextHolder.getContext().getAuthentication().getName() );
     }
 
-    @GetMapping ( "/calculate-score/{vstseq}/{brnch}" )
+    /*  @GetMapping ( "/calculate-score/{vstseq}/{brnch}" )
     @Timed
     public Long calculateScore( HttpServletResponse response, @PathVariable long vstseq, @PathVariable long brnch ) throws IOException {
         return complianceService.calScore( vstseq, brnch );
-    }
+    }*/
 
     // @GetMapping ( "/compliance-adt-vst" )
     // public ResponseEntity< List< MwAdtVstDto > > getComplianceADTVstData() {
-    //     log.debug( "REST request to get Data For Compliance" );
-    //     return ResponseEntity.ok()
-    //             .body( complianceService.getADTVstDataForTab( SecurityContextHolder.getContext().getAuthentication().getName() ) );
+    // log.debug( "REST request to get Data For Compliance" );
+    // return ResponseEntity.ok()
+    // .body( complianceService.getADTVstDataForTab( SecurityContextHolder.getContext().getAuthentication().getName() ) );
     // }
 
     @GetMapping ( "/compliance-clnt-data/{brnchSeq}" )

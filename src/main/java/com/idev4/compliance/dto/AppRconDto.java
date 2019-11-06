@@ -20,7 +20,7 @@ public class AppRconDto {
 
     public String attribute_val;
 
-    public Integer valid_flg;
+    public String valid_flg;
 
     public Long adt_vst_seq;
 
@@ -46,7 +46,7 @@ public class AppRconDto {
         rcon.setAttributeIndx( attribute_indx );
         rcon.setAttributeNm( attribute_nm );
         rcon.setAttributeVal( attribute_val );
-        rcon.setValidFlg( ( valid_flg == null ) ? true : ( valid_flg == 1 ) ? true : false );
+        rcon.setValidFlg( valid_flg );
         rcon.setAdtVstSeq( adt_vst_seq );
         rcon.setAppInfoSeq( app_info_seq );
 
@@ -72,7 +72,7 @@ public class AppRconDto {
         attribute_indx = rcon.getAttributeIndx();
         attribute_nm = rcon.getAttributeNm();
         attribute_val = rcon.getAttributeVal();
-        valid_flg = ( rcon.getValidFlg() == null ) ? 0 : ( rcon.getValidFlg() ? 1 : 0 );
+        valid_flg = rcon.getValidFlg();
         adt_vst_seq = rcon.getAdtVstSeq();
         app_info_seq = rcon.getAppInfoSeq();
         crtd_by = rcon.getCrtdBy();
