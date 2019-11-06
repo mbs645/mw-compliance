@@ -68,6 +68,7 @@ public class TabDataController {
 
     /*  @GetMapping ( "/calculate-score/{vstseq}/{brnch}" )
     @Timed
+    <<<<<<< HEAD
     public Long calculateScore( HttpServletResponse response, @PathVariable long vstseq, @PathVariable long brnch ) throws IOException {
         return complianceService.calScore( vstseq, brnch );
     }*/
@@ -79,7 +80,7 @@ public class TabDataController {
     // .body( complianceService.getADTVstDataForTab( SecurityContextHolder.getContext().getAuthentication().getName() ) );
     // }
 
-    @GetMapping ( "/compliance-clnt-data/{brnchSeq}" )
+    @GetMapping ( "/compliance-clnt-data-for-brnch/{brnchSeq}" )
     public ResponseEntity< List< LoanInfoDto > > getComplianceClntDataByBrnch( @PathVariable Integer brnchSeq ) {
         log.debug( "REST request to get Data For Compliance" );
         return ResponseEntity.ok().body(
