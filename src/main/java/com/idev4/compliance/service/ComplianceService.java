@@ -133,7 +133,6 @@ public class ComplianceService {
         this.mwPortEmpRelRepository = mwPortEmpRelRepository;
         this.mwDvcRgstryRepository = mwDvcRgstryRepository;
         this.mwAdtIsuRepository = mwAdtIsuRepository;
-        this.mwAdtCtgryRepository = mwAdtCtgryRepository;
         this.mwAdtSbCtgryRepository = mwAdtSbCtgryRepository;
         this.mwAppRconRepository = mwAppRconRepository;
         this.mwAdtBrnchRnkngRepository = mwAdtBrnchRnkngRepository;
@@ -141,6 +140,7 @@ public class ComplianceService {
         this.mwAdcChcksRepository = mwAdcChcksRepository;
         this.mwAdcChckQstnrRepository = mwAdcChckQstnrRepository;
 
+        this.mwAdtCtgryRepository = mwAdtCtgryRepository;
     }
 
     public TabDto getDataForTab( String lanId ) {
@@ -186,11 +186,62 @@ public class ComplianceService {
         return dto;
     }
 
-    public List< LoanInfoDto > getClientDataForTab( String lanId, Integer brnchSeq ) {
+    public ResponseEntity updateVstStsViaTab( String curUser, Integer brnchSeq, Long vstSeq ) {
+        MwAdtVst exVst = mwAdtVstRepository.findOneByAdtVstSeqAndCrntRecFlg( vstSeq, true );
+        if ( exVst != null ) {
+            Long pendingStsKey = 0L;
+            MwRefCdVal val = mwRefCdValRepository.findRefCdByGrpAndVal( "0358", "01385" );
+            if ( val != null )
+                pendingStsKey = val.getRefCdSeq();
+
+            Long inProgressStatusKey = 0L;
+            val = mwRefCdValRepository.findRefCdByGrpAndVal( "0358", "01386" );
+            if ( val != null )
+                inProgressStatusKey = val.getRefCdSeq();
+
+            List< MwAdtVst > vsts = mwAdtVstRepository.findAllByAsgnToAndVstStsKeyAndCrntRecFlg( exVst.getAsgnTo(), inProgressStatusKey,
+                    true );
+            if ( vsts != null && vsts.size() > 0 ) {
+                return ResponseEntity.badRequest().body( "{\"error\":\"Employee Already has a Visit in Progress.\"}" );
+            }
+
+            exVst.setCrntRecFlg( false );
+            exVst.setDelFlg( true );
+            exVst.setEffEndDt( Instant.now() );
+            exVst.setLastUpdBy( curUser );
+            exVst.setLastUpdDt( Instant.now() );
+            mwAdtVstRepository.save( exVst );
+            MwAdtVst vst = new MwAdtVst();
+            vst.setCrntRecFlg( true );
+            vst.setDelFlg( false );
+            vst.setEffStartDt( Instant.now() );
+            vst.setLastUpdBy( curUser );
+            vst.setLastUpdDt( Instant.now() );
+            vst.setCrtdBy( curUser );
+            vst.setActlStrtDt( Instant.now() );
+            vst.setAdtFlg( exVst.getAdtFlg() );
+            vst.setAdtVstSeq( exVst.getAdtVstSeq() );
+            vst.setAsgnTo( exVst.getAsgnTo() );
+            vst.setBrnchSeq( exVst.getBrnchSeq() );
+            vst.setCrtdDt( Instant.now() );
+            vst.setStrtDt( exVst.getStrtDt() );
+            vst.setEndDt( exVst.getEndDt() );
+            vst.setVstStsKey( inProgressStatusKey );
+            vst.setVstId( exVst.getVstId() );
+            mwAdtVstRepository.save( vst );
+            List< LoanInfoDto > app_info = new ArrayList<>();
+
+            app_info = complianceData( brnchSeq );
+
+            return ResponseEntity.ok().body( app_info );
+        }
+        return ResponseEntity.badRequest().body( "{\"error\":\"Vst not found.\"}" );
+    }
+
+    public List< LoanInfoDto > getClientDataForTab( String lanId, Integer brnchSeq, Long vstSeq ) {
         List< LoanInfoDto > app_info = new ArrayList<>();
 
         app_info = complianceData( brnchSeq );
-
         return app_info;
     }
 

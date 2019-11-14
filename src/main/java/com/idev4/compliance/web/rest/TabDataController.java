@@ -53,11 +53,10 @@ public class TabDataController {
                 .body( complianceService.getADTVstDataForTab( SecurityContextHolder.getContext().getAuthentication().getName() ) );
     }
 
-    @GetMapping ( "/compliance-clnt-data/{brnchSeq}" )
-    public ResponseEntity< List< LoanInfoDto > > getComplianceClntData( @PathVariable Integer brnchSeq ) {
+    @GetMapping ( "/compliance-clnt-data/{brnchSeq}/{vstSeq}" )
+    public ResponseEntity< List< LoanInfoDto > > getComplianceClntData( @PathVariable Integer brnchSeq, @PathVariable Long vstSeq ) {
         log.debug( "REST request to get Data For Compliance" );
-        return ResponseEntity.ok().body(
-                complianceService.getClientDataForTab( SecurityContextHolder.getContext().getAuthentication().getName(), brnchSeq ) );
+        return complianceService.updateVstStsViaTab( SecurityContextHolder.getContext().getAuthentication().getName(), brnchSeq, vstSeq );
     }
 
     @PostMapping ( "/submit-compliance-data" )
