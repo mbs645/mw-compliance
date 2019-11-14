@@ -7,6 +7,7 @@ import com.idev4.compliance.domain.MwAdcChcks;
 public interface MwAdcChcksRepository extends JpaRepository< MwAdcChcks, Long > {
 	
     public MwAdcChcks findOneByCrntRecFlg(boolean flag );
+    public MwAdcChcks findOneByAdcChksSeqAndCrntRecFlg(Long adc_seq,boolean flg)
 
 
 }

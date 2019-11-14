@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.idev4.compliance.domain.MwAdcChckQstnr;
+import com.idev4.compliance.domain.MwAdcChcks;
 import com.idev4.compliance.domain.MwAdtFndng;
 import com.idev4.compliance.domain.MwAdtVst;
 import com.idev4.compliance.domain.MwAdtVstSrvy;
@@ -31,6 +33,8 @@ import com.idev4.compliance.dto.LoanInfoDto;
 import com.idev4.compliance.dto.TabDto;
 import com.idev4.compliance.dto.tab.ComplianceSubmitDto;
 import com.idev4.compliance.dto.tab.MwAdtVstDto;
+import com.idev4.compliance.repository.MwAdcChckQstnrRepository;
+import com.idev4.compliance.repository.MwAdcChcksRepository;
 import com.idev4.compliance.repository.MwAdtBrnchRnkngRepository;
 import com.idev4.compliance.repository.MwAdtCtgryRepository;
 import com.idev4.compliance.repository.MwAdtFndngRepository;
@@ -94,6 +98,11 @@ public class ComplianceService {
 
     private final MwAdtBrnchRnkngRepository mwAdtBrnchRnkngRepository;
 
+    private final MwAdcChcksRepository mwAdcChcksRepository;
+
+    private final MwAdcChckQstnrRepository mwAdcChckQstnrRepository;
+
+    
     private final DateFormat formatter = new SimpleDateFormat( "dd-MM-yyyy hh:mm:ss" );
 
     private final DateFormat formatterDate = new SimpleDateFormat( "dd-MM-yyyy" );
@@ -109,7 +118,7 @@ public class ComplianceService {
             MwPortEmpRelRespository mwPortEmpRelRepository, MwDvcRgstrRepository mwDvcRgstryRepository,
             MwAdtIsuRepository mwAdtIsuRepository, MwAdtCtgryRepository mwAdtCtgryRepository, MwAdtSbCtgryRepository mwAdtSbCtgryRepository,
             MwAppRconRepository mwAppRconRepository, MwAdtBrnchRnkngRepository mwAdtBrnchRnkngRepository,
-            MwRefCdGrpRepository mwRefCdGrpRepository ) {
+            MwRefCdGrpRepository mwRefCdGrpRepository,MwAdcChcksRepository mwAdcChcksRepository,MwAdcChckQstnrRepository mwAdcChckQstnrRepository ) {
         this.em = em;
         this.mwQstnrRepository = mwQstnrRepository;
         this.mwQstRepository = mwQstRepository;
@@ -129,6 +138,8 @@ public class ComplianceService {
         this.mwAppRconRepository = mwAppRconRepository;
         this.mwAdtBrnchRnkngRepository = mwAdtBrnchRnkngRepository;
         this.mwRefCdGrpRepository = mwRefCdGrpRepository;
+        this.mwAdcChcksRepository = mwAdcChcksRepository;
+        this.mwAdcChckQstnrRepository = mwAdcChckQstnrRepository;
 
     }
 
@@ -309,6 +320,42 @@ public class ComplianceService {
             } );
         }
 
+        if ( dto.mw_adc_chcks != null ) {
+            dto.mw_adc_chcks.forEach( adcDto -> {
+                if ( adcDto.adc_chks_seq != null ) {
+                    MwAdcChcks adcChcks = mwAdcChcksRepository.findOneByAdcChksSeqAndCrntRecFlg( adcDto.adc_chks_seq, true );
+                    if ( adcChcks != null ) {
+                    	adcChcks.setCrntRecFlg( false );
+                    	adcChcks.setDelFlg( true );
+                    	adcChcks.setLastUpdBy( curUser );
+                    	adcChcks.setLastUpdDt( Instant.now() );
+                        mwAdcChcksRepository.save( adcChcks );
+                    }
+                    MwAdcChcks rco = adcDto.DtoToDomain( formatter, formatterDate );
+
+                    mwAdcChcksRepository.save( rco );
+                }
+            } );
+        }
+        
+        if ( dto.mw_adc_chck_qstnr != null ) {
+            dto.mw_adc_chck_qstnr.forEach( adcDto -> {
+                if ( adcDto.adc_chks_qstnr_seq != null ) {
+                	MwAdcChckQstnr adcChcks = mwAdcChckQstnrRepository.findOneByAdcChksQstnrSeqAndCrntRecFlg( adcDto.adc_chks_qstnr_seq, true );
+                    if ( adcChcks != null ) {
+                    	adcChcks.setCrntRecFlg( false );
+                    	adcChcks.setDelFlg( true );
+                    	adcChcks.setLastUpdBy( curUser );
+                    	adcChcks.setLastUpdDt( Instant.now() );
+                    	mwAdcChckQstnrRepository.save( adcChcks );
+                    }
+                    MwAdcChckQstnr rco = adcDto.DtoToDomain( formatter, formatterDate );
+
+                    mwAdcChckQstnrRepository.save( rco );
+                }
+            } );
+        }
+        
         calScore( vst.getAdtVstSeq(), vst.getBrnchSeq() );
         return ResponseEntity.ok().body( "{\"body\":\"Success\"}" );
     }
