@@ -238,7 +238,7 @@ public class ComplianceService {
         return ResponseEntity.badRequest().body( "{\"error\":\"Vst not found.\"}" );
     }
 
-    public List< LoanInfoDto > getClientDataForTab( String lanId, Integer brnchSeq, Long vstSeq ) {
+    public List< LoanInfoDto > getClientDataForTab( String lanId, Integer brnchSeq) {
         List< LoanInfoDto > app_info = new ArrayList<>();
 
         app_info = complianceData( brnchSeq );
