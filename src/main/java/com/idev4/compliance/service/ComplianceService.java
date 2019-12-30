@@ -102,7 +102,6 @@ public class ComplianceService {
 
     private final MwAdcChckQstnrRepository mwAdcChckQstnrRepository;
 
-    
     private final DateFormat formatter = new SimpleDateFormat( "dd-MM-yyyy hh:mm:ss" );
 
     private final DateFormat formatterDate = new SimpleDateFormat( "dd-MM-yyyy" );
@@ -118,7 +117,8 @@ public class ComplianceService {
             MwPortEmpRelRespository mwPortEmpRelRepository, MwDvcRgstrRepository mwDvcRgstryRepository,
             MwAdtIsuRepository mwAdtIsuRepository, MwAdtCtgryRepository mwAdtCtgryRepository, MwAdtSbCtgryRepository mwAdtSbCtgryRepository,
             MwAppRconRepository mwAppRconRepository, MwAdtBrnchRnkngRepository mwAdtBrnchRnkngRepository,
-            MwRefCdGrpRepository mwRefCdGrpRepository,MwAdcChcksRepository mwAdcChcksRepository,MwAdcChckQstnrRepository mwAdcChckQstnrRepository ) {
+            MwRefCdGrpRepository mwRefCdGrpRepository, MwAdcChcksRepository mwAdcChcksRepository,
+            MwAdcChckQstnrRepository mwAdcChckQstnrRepository ) {
         this.em = em;
         this.mwQstnrRepository = mwQstnrRepository;
         this.mwQstRepository = mwQstRepository;
@@ -186,6 +186,7 @@ public class ComplianceService {
         return dto;
     }
 
+    @Transactional
     public ResponseEntity updateVstStsViaTab( String curUser, Integer brnchSeq, Long vstSeq ) {
         MwAdtVst exVst = mwAdtVstRepository.findOneByAdtVstSeqAndCrntRecFlg( vstSeq, true );
         if ( exVst != null ) {
@@ -204,6 +205,10 @@ public class ComplianceService {
             if ( vsts != null && vsts.size() > 0 ) {
                 return ResponseEntity.badRequest().body( "{\"error\":\"Employee Already has a Visit in Progress.\"}" );
             }
+
+            List< LoanInfoDto > app_info = complianceData( brnchSeq );
+            if ( app_info.size() <= 0 )
+                return ResponseEntity.badRequest().body( "{\"error\":\"No Data Found For Visit.\"}" );
 
             exVst.setCrntRecFlg( false );
             exVst.setDelFlg( true );
@@ -229,16 +234,13 @@ public class ComplianceService {
             vst.setVstStsKey( inProgressStatusKey );
             vst.setVstId( exVst.getVstId() );
             mwAdtVstRepository.save( vst );
-            List< LoanInfoDto > app_info = new ArrayList<>();
-
-            app_info = complianceData( brnchSeq );
 
             return ResponseEntity.ok().body( app_info );
         }
         return ResponseEntity.badRequest().body( "{\"error\":\"Vst not found.\"}" );
     }
 
-    public List< LoanInfoDto > getClientDataForTab( String lanId, Integer brnchSeq) {
+    public List< LoanInfoDto > getClientDataForTab( String lanId, Integer brnchSeq ) {
         List< LoanInfoDto > app_info = new ArrayList<>();
 
         app_info = complianceData( brnchSeq );
@@ -376,10 +378,10 @@ public class ComplianceService {
                 if ( adcDto.adc_chks_seq != null ) {
                     MwAdcChcks adcChcks = mwAdcChcksRepository.findOneByAdcChksSeqAndCrntRecFlg( adcDto.adc_chks_seq, true );
                     if ( adcChcks != null ) {
-                    	adcChcks.setCrntRecFlg( false );
-                    	adcChcks.setDelFlg( true );
-                    	adcChcks.setLastUpdBy( curUser );
-                    	adcChcks.setLastUpdDt( Instant.now() );
+                        adcChcks.setCrntRecFlg( false );
+                        adcChcks.setDelFlg( true );
+                        adcChcks.setLastUpdBy( curUser );
+                        adcChcks.setLastUpdDt( Instant.now() );
                         mwAdcChcksRepository.save( adcChcks );
                     }
                     MwAdcChcks rco = adcDto.DtoToDomain( formatter, formatterDate );
@@ -388,17 +390,18 @@ public class ComplianceService {
                 }
             } );
         }
-        
+
         if ( dto.mw_adc_chck_qstnr != null ) {
             dto.mw_adc_chck_qstnr.forEach( adcDto -> {
                 if ( adcDto.adc_chks_qstnr_seq != null ) {
-                	MwAdcChckQstnr adcChcks = mwAdcChckQstnrRepository.findOneByAdcChksQstnrSeqAndCrntRecFlg( adcDto.adc_chks_qstnr_seq, true );
+                    MwAdcChckQstnr adcChcks = mwAdcChckQstnrRepository.findOneByAdcChksQstnrSeqAndCrntRecFlg( adcDto.adc_chks_qstnr_seq,
+                            true );
                     if ( adcChcks != null ) {
-                    	adcChcks.setCrntRecFlg( false );
-                    	adcChcks.setDelFlg( true );
-                    	adcChcks.setLastUpdBy( curUser );
-                    	adcChcks.setLastUpdDt( Instant.now() );
-                    	mwAdcChckQstnrRepository.save( adcChcks );
+                        adcChcks.setCrntRecFlg( false );
+                        adcChcks.setDelFlg( true );
+                        adcChcks.setLastUpdBy( curUser );
+                        adcChcks.setLastUpdDt( Instant.now() );
+                        mwAdcChckQstnrRepository.save( adcChcks );
                     }
                     MwAdcChckQstnr rco = adcDto.DtoToDomain( formatter, formatterDate );
 
@@ -406,7 +409,7 @@ public class ComplianceService {
                 }
             } );
         }
-        
+
         calScore( vst.getAdtVstSeq(), vst.getBrnchSeq() );
         return ResponseEntity.ok().body( "{\"body\":\"Success\"}" );
     }
