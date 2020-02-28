@@ -16,6 +16,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.idev4.compliance.domain.MwAdcChckQstnr;
+import com.idev4.compliance.domain.MwAdcChcks;
 import com.idev4.compliance.domain.MwAdtFndng;
 import com.idev4.compliance.domain.MwAdtVst;
 import com.idev4.compliance.domain.MwAdtVstRanking;
@@ -33,6 +35,8 @@ import com.idev4.compliance.dto.LoanInfoDto;
 import com.idev4.compliance.dto.TabDto;
 import com.idev4.compliance.dto.tab.ComplianceSubmitDto;
 import com.idev4.compliance.dto.tab.MwAdtVstDto;
+import com.idev4.compliance.repository.MwAdcChckQstnrRepository;
+import com.idev4.compliance.repository.MwAdcChcksRepository;
 import com.idev4.compliance.repository.MwAdtBrnchRnkngRepository;
 import com.idev4.compliance.repository.MwAdtCtgryRepository;
 import com.idev4.compliance.repository.MwAdtFndngRepository;
@@ -97,7 +101,11 @@ public class ComplianceService {
 
     private final MwAdtBrnchRnkngRepository mwAdtBrnchRnkngRepository;
 
+
     private final MwAdtVstRkngRepository mwAdtVstRkngRepository;
+    private final MwAdcChcksRepository mwAdcChcksRepository;
+
+    private final MwAdcChckQstnrRepository mwAdcChckQstnrRepository;
 
     private final DateFormat formatter = new SimpleDateFormat( "dd-MM-yyyy hh:mm:ss" );
 
@@ -114,7 +122,9 @@ public class ComplianceService {
             MwPortEmpRelRespository mwPortEmpRelRepository, MwDvcRgstrRepository mwDvcRgstryRepository,
             MwAdtIsuRepository mwAdtIsuRepository, MwAdtCtgryRepository mwAdtCtgryRepository, MwAdtSbCtgryRepository mwAdtSbCtgryRepository,
             MwAppRconRepository mwAppRconRepository, MwAdtBrnchRnkngRepository mwAdtBrnchRnkngRepository,
-            MwRefCdGrpRepository mwRefCdGrpRepository, MwAdtVstRkngRepository mwAdtVstRkngRepository ) {
+
+            MwRefCdGrpRepository mwRefCdGrpRepository, MwAdcChcksRepository mwAdcChcksRepository,
+            MwAdcChckQstnrRepository mwAdcChckQstnrRepository ) {
         this.em = em;
         this.mwQstnrRepository = mwQstnrRepository;
         this.mwQstRepository = mwQstRepository;
@@ -129,13 +139,17 @@ public class ComplianceService {
         this.mwPortEmpRelRepository = mwPortEmpRelRepository;
         this.mwDvcRgstryRepository = mwDvcRgstryRepository;
         this.mwAdtIsuRepository = mwAdtIsuRepository;
-        this.mwAdtCtgryRepository = mwAdtCtgryRepository;
         this.mwAdtSbCtgryRepository = mwAdtSbCtgryRepository;
         this.mwAppRconRepository = mwAppRconRepository;
         this.mwAdtBrnchRnkngRepository = mwAdtBrnchRnkngRepository;
         this.mwRefCdGrpRepository = mwRefCdGrpRepository;
         this.mwAdtVstRkngRepository = mwAdtVstRkngRepository;
 
+        this.mwAdcChcksRepository = mwAdcChcksRepository;
+        this.mwAdcChckQstnrRepository = mwAdcChckQstnrRepository;
+
+
+        this.mwAdtCtgryRepository = mwAdtCtgryRepository;
     }
 
     public TabDto getDataForTab( String lanId ) {
@@ -181,11 +195,64 @@ public class ComplianceService {
         return dto;
     }
 
+    @Transactional
+    public ResponseEntity updateVstStsViaTab( String curUser, Integer brnchSeq, Long vstSeq ) {
+        MwAdtVst exVst = mwAdtVstRepository.findOneByAdtVstSeqAndCrntRecFlg( vstSeq, true );
+        if ( exVst != null ) {
+            Long pendingStsKey = 0L;
+            MwRefCdVal val = mwRefCdValRepository.findRefCdByGrpAndVal( "0358", "01385" );
+            if ( val != null )
+                pendingStsKey = val.getRefCdSeq();
+
+            Long inProgressStatusKey = 0L;
+            val = mwRefCdValRepository.findRefCdByGrpAndVal( "0358", "01386" );
+            if ( val != null )
+                inProgressStatusKey = val.getRefCdSeq();
+
+            List< MwAdtVst > vsts = mwAdtVstRepository.findAllByAsgnToAndVstStsKeyAndCrntRecFlg( exVst.getAsgnTo(), inProgressStatusKey,
+                    true );
+            if ( vsts != null && vsts.size() > 0 ) {
+                return ResponseEntity.badRequest().body( "{\"error\":\"Employee Already has a Visit in Progress.\"}" );
+            }
+
+            List< LoanInfoDto > app_info = complianceData( brnchSeq );
+            if ( app_info.size() <= 0 )
+                return ResponseEntity.badRequest().body( "{\"error\":\"No Data Found For Visit.\"}" );
+
+            exVst.setCrntRecFlg( false );
+            exVst.setDelFlg( true );
+            exVst.setEffEndDt( Instant.now() );
+            exVst.setLastUpdBy( curUser );
+            exVst.setLastUpdDt( Instant.now() );
+            mwAdtVstRepository.save( exVst );
+            MwAdtVst vst = new MwAdtVst();
+            vst.setCrntRecFlg( true );
+            vst.setDelFlg( false );
+            vst.setEffStartDt( Instant.now() );
+            vst.setLastUpdBy( curUser );
+            vst.setLastUpdDt( Instant.now() );
+            vst.setCrtdBy( curUser );
+            vst.setActlStrtDt( Instant.now() );
+            vst.setAdtFlg( exVst.getAdtFlg() );
+            vst.setAdtVstSeq( exVst.getAdtVstSeq() );
+            vst.setAsgnTo( exVst.getAsgnTo() );
+            vst.setBrnchSeq( exVst.getBrnchSeq() );
+            vst.setCrtdDt( Instant.now() );
+            vst.setStrtDt( exVst.getStrtDt() );
+            vst.setEndDt( exVst.getEndDt() );
+            vst.setVstStsKey( inProgressStatusKey );
+            vst.setVstId( exVst.getVstId() );
+            mwAdtVstRepository.save( vst );
+
+            return ResponseEntity.ok().body( app_info );
+        }
+        return ResponseEntity.badRequest().body( "{\"error\":\"Vst not found.\"}" );
+    }
+
     public List< LoanInfoDto > getClientDataForTab( String lanId, Integer brnchSeq ) {
         List< LoanInfoDto > app_info = new ArrayList<>();
 
         app_info = complianceData( brnchSeq );
-
         return app_info;
     }
 
@@ -311,6 +378,43 @@ public class ComplianceService {
                     MwAppRcon rco = rconDto.DtoToDomain( formatter, formatterDate );
 
                     mwAppRconRepository.save( rco );
+                }
+            } );
+        }
+
+        if ( dto.mw_adc_chcks != null ) {
+            dto.mw_adc_chcks.forEach( adcDto -> {
+                if ( adcDto.adc_chks_seq != null ) {
+                    MwAdcChcks adcChcks = mwAdcChcksRepository.findOneByAdcChksSeqAndCrntRecFlg( adcDto.adc_chks_seq, true );
+                    if ( adcChcks != null ) {
+                        adcChcks.setCrntRecFlg( false );
+                        adcChcks.setDelFlg( true );
+                        adcChcks.setLastUpdBy( curUser );
+                        adcChcks.setLastUpdDt( Instant.now() );
+                        mwAdcChcksRepository.save( adcChcks );
+                    }
+                    MwAdcChcks rco = adcDto.DtoToDomain( formatter, formatterDate );
+
+                    mwAdcChcksRepository.save( rco );
+                }
+            } );
+        }
+
+        if ( dto.mw_adc_chck_qstnr != null ) {
+            dto.mw_adc_chck_qstnr.forEach( adcDto -> {
+                if ( adcDto.adc_chks_qstnr_seq != null ) {
+                    MwAdcChckQstnr adcChcks = mwAdcChckQstnrRepository.findOneByAdcChksQstnrSeqAndCrntRecFlg( adcDto.adc_chks_qstnr_seq,
+                            true );
+                    if ( adcChcks != null ) {
+                        adcChcks.setCrntRecFlg( false );
+                        adcChcks.setDelFlg( true );
+                        adcChcks.setLastUpdBy( curUser );
+                        adcChcks.setLastUpdDt( Instant.now() );
+                        mwAdcChckQstnrRepository.save( adcChcks );
+                    }
+                    MwAdcChckQstnr rco = adcDto.DtoToDomain( formatter, formatterDate );
+
+                    mwAdcChckQstnrRepository.save( rco );
                 }
             } );
         }

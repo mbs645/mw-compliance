@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,11 +58,11 @@ public class TabDataController {
                 .body( complianceService.getADTVstDataForTab( SecurityContextHolder.getContext().getAuthentication().getName() ) );
     }
 
-    @GetMapping ( "/compliance-clnt-data/{brnchSeq}" )
-    public ResponseEntity< List< LoanInfoDto > > getComplianceClntData( @PathVariable Integer brnchSeq ) {
+    @GetMapping ( "/compliance-clnt-data/{brnchSeq}/{vstSeq}" )
+    @Transactional
+    public ResponseEntity< List< LoanInfoDto > > getComplianceClntData( @PathVariable Integer brnchSeq, @PathVariable Long vstSeq ) {
         log.debug( "REST request to get Data For Compliance" );
-        return ResponseEntity.ok().body(
-                complianceService.getClientDataForTab( SecurityContextHolder.getContext().getAuthentication().getName(), brnchSeq ) );
+        return complianceService.updateVstStsViaTab( SecurityContextHolder.getContext().getAuthentication().getName(), brnchSeq, vstSeq );
     }
 
     @PostMapping ( "/submit-compliance-data" )
