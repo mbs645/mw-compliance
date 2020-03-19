@@ -1,10 +1,12 @@
 package com.idev4.compliance.repository;
 
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.idev4.compliance.domain.MwAdtSbCtgry;
 import com.idev4.compliance.domain.MwBrnch;
 
 
@@ -26,4 +28,6 @@ public interface MwBrnchRepository extends JpaRepository<MwBrnch, Long> {
 	public List<MwBrnch> findAllByBrnchSeq(long seq);
 
 	public List<MwBrnch> findAllByAreaSeqAndCrntRecFlg(Long id, boolean b);
+    public List< MwBrnch > findAllByLastUpdDtAfterAndCrntRecFlgOrLastUpdDtAfterAndDelFlg( Instant date, boolean crntRecFlg, Instant ldate,boolean delFlg );
+
 }

@@ -33,7 +33,7 @@ public class MwAdtIsu implements Serializable {
 	    
 	    
 	    @Column(name = "ISU_NM")
-	    private String IsuNm;
+	    private String isuNm;
 	    
 	    @Column(name = "ISU_CMNT")
 	    private String isuCmnt;
@@ -106,11 +106,11 @@ public class MwAdtIsu implements Serializable {
 		}
 
 		public String getIsuNm() {
-			return IsuNm;
+			return isuNm;
 		}
 
 		public void setIsuNm(String isuNm) {
-			IsuNm = isuNm;
+			this.isuNm = isuNm;
 		}
 
 		public String getIsuCmnt() {

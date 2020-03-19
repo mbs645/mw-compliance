@@ -65,6 +65,18 @@ public class MwAdtVstSrvy implements Serializable {
     @Column(name = "CMNT")
     private String cmnt;
 
+
+    @Column(name = "ANSWR_VAL")
+    private String answrVal;
+    
+	public String getAnswrVal() {
+		return answrVal;
+	}
+
+	public void setAnswrVal(String answrVal) {
+		this.answrVal = answrVal;
+	}
+
 	public Long getAdtVstSrvySeq() {
 		return adtVstSrvySeq;
 	}

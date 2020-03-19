@@ -52,10 +52,10 @@ public class ClientController {
     public List<DvcRgstrDto> getDvcRgstr() {
         return comp_Ser.getDvcReg();
     }
-	@GetMapping("/getOneDvcRegData/{id}")
-    public DvcRgstrDto getOneDvcRgstr(@PathVariable String id) {
-        return comp_Ser.getOneDvcRgstr(id);
-    }
+//	@GetMapping("/getOneDvcRegData/{id}")
+//    public DvcRgstrDto getOneDvcRgstr(@PathVariable String id) {
+//        return comp_Ser.getOneDvcRgstr(id);
+//    }
 	
 	
 	@GetMapping("/getDVCReg")

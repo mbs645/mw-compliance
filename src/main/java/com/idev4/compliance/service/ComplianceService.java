@@ -147,6 +147,7 @@ public class ComplianceService {
         TabDto dto = new TabDto();
         // dto.mw_prv_vst=getPrvVst();
         // dto.app_info = complianceData();
+//        dto.mw_answr = mwAnswrRepository.findAllByLastUpdDtAfterAndCrntRecFlgOrLastUpdDtAfterAndDelFlg(,true,,true);
         dto.mw_answr = mwAnswrRepository.findAllByDelFlgAndCrntRecFlg( false, true );
         dto.mw_brnch = mwBrnchRepository.findAllByCrntRecFlg( true );
         dto.mw_emp = mwEmpRepository.findAll();
@@ -185,55 +186,69 @@ public class ComplianceService {
         }
         return dto;
     }
+    
+    public ResponseEntity updateVstStsViaTab( String curUser, Long vstSeq ) {
+    	 MwAdtVst exVst = mwAdtVstRepository.findOneByAdtVstSeqAndCrntRecFlg( vstSeq, true );
+         if ( exVst != null ) { 
+    	 Long pendingStsKey = 0L;
+         MwRefCdVal val = mwRefCdValRepository.findRefCdByGrpAndVal( "0358", "01385" );
+         if ( val != null )
+             pendingStsKey = val.getRefCdSeq();
 
-    public ResponseEntity updateVstStsViaTab( String curUser, Integer brnchSeq, Long vstSeq ) {
+         Long inProgressStatusKey = 0L;
+         val = mwRefCdValRepository.findRefCdByGrpAndVal( "0358", "01386" );
+         if ( val != null )
+             inProgressStatusKey = val.getRefCdSeq();
+
+         List< MwAdtVst > vsts = mwAdtVstRepository.findAllByAsgnToAndVstStsKeyAndCrntRecFlg( exVst.getAsgnTo(), inProgressStatusKey,
+                 true );
+         if ( vsts != null && vsts.size() > 0 ) {
+             return ResponseEntity.badRequest().body( "{\"error\":\"Employee Already has a Visit in Progress.\"}" );
+         }
+
+         exVst.setCrntRecFlg( false );
+         exVst.setDelFlg( true );
+         exVst.setEffEndDt( Instant.now() );
+         exVst.setLastUpdBy( curUser );
+         exVst.setLastUpdDt( Instant.now() );
+         mwAdtVstRepository.save( exVst );
+         MwAdtVst vst = new MwAdtVst();
+         vst.setCrntRecFlg( true );
+         vst.setDelFlg( false );
+         vst.setEffStartDt( Instant.now() );
+         vst.setLastUpdBy( curUser );
+         vst.setLastUpdDt( Instant.now() );
+         vst.setCrtdBy( curUser );
+         vst.setActlStrtDt( Instant.now() );
+         vst.setAdtFlg( exVst.getAdtFlg() );
+         vst.setAdtVstSeq( exVst.getAdtVstSeq() );
+         vst.setAsgnTo( exVst.getAsgnTo() );
+         vst.setBrnchSeq( exVst.getBrnchSeq() );
+         vst.setCrtdDt( Instant.now() );
+         vst.setStrtDt( exVst.getStrtDt() );
+         vst.setEndDt( exVst.getEndDt() );
+         vst.setTrgtClnt(exVst.getTrgtClnt());
+         vst.setVstStsKey( inProgressStatusKey );
+         vst.setVstId( exVst.getVstId() );
+         mwAdtVstRepository.save( vst );
+         return ResponseEntity.ok().body("Okay");
+         }
+         return ResponseEntity.badRequest().body( "{\"error\":\"Vst not found.\"}" );
+
+    }
+
+    public ResponseEntity compClntData( String curUser, Integer brnchSeq, Long vstSeq ) {
         MwAdtVst exVst = mwAdtVstRepository.findOneByAdtVstSeqAndCrntRecFlg( vstSeq, true );
+        
         if ( exVst != null ) {
-            Long pendingStsKey = 0L;
-            MwRefCdVal val = mwRefCdValRepository.findRefCdByGrpAndVal( "0358", "01385" );
-            if ( val != null )
-                pendingStsKey = val.getRefCdSeq();
-
-            Long inProgressStatusKey = 0L;
-            val = mwRefCdValRepository.findRefCdByGrpAndVal( "0358", "01386" );
-            if ( val != null )
-                inProgressStatusKey = val.getRefCdSeq();
-
-            List< MwAdtVst > vsts = mwAdtVstRepository.findAllByAsgnToAndVstStsKeyAndCrntRecFlg( exVst.getAsgnTo(), inProgressStatusKey,
-                    true );
-            if ( vsts != null && vsts.size() > 0 ) {
-                return ResponseEntity.badRequest().body( "{\"error\":\"Employee Already has a Visit in Progress.\"}" );
-            }
-
-            exVst.setCrntRecFlg( false );
-            exVst.setDelFlg( true );
-            exVst.setEffEndDt( Instant.now() );
-            exVst.setLastUpdBy( curUser );
-            exVst.setLastUpdDt( Instant.now() );
-            mwAdtVstRepository.save( exVst );
-            MwAdtVst vst = new MwAdtVst();
-            vst.setCrntRecFlg( true );
-            vst.setDelFlg( false );
-            vst.setEffStartDt( Instant.now() );
-            vst.setLastUpdBy( curUser );
-            vst.setLastUpdDt( Instant.now() );
-            vst.setCrtdBy( curUser );
-            vst.setActlStrtDt( Instant.now() );
-            vst.setAdtFlg( exVst.getAdtFlg() );
-            vst.setAdtVstSeq( exVst.getAdtVstSeq() );
-            vst.setAsgnTo( exVst.getAsgnTo() );
-            vst.setBrnchSeq( exVst.getBrnchSeq() );
-            vst.setCrtdDt( Instant.now() );
-            vst.setStrtDt( exVst.getStrtDt() );
-            vst.setEndDt( exVst.getEndDt() );
-            vst.setVstStsKey( inProgressStatusKey );
-            vst.setVstId( exVst.getVstId() );
-            mwAdtVstRepository.save( vst );
+           // if adt_flg== 2 send empty data
+        	
             List< LoanInfoDto > app_info = new ArrayList<>();
+            if(exVst.getAdtFlg().longValue()==1) {
+            	app_info = complianceData( brnchSeq );
+            	return ResponseEntity.ok().body( app_info );}
 
-            app_info = complianceData( brnchSeq );
-
-            return ResponseEntity.ok().body( app_info );
+            return ResponseEntity.ok().body( "" );
         }
         return ResponseEntity.badRequest().body( "{\"error\":\"Vst not found.\"}" );
     }
@@ -276,8 +291,35 @@ public class ComplianceService {
         return dto;
     }
 
-    public DvcRgstrDto getOneDvcRgstr( String id ) {
+    public TabDto traverseDataForTab( Instant syncDate, String id ) {
+        final TabDto dto = new TabDto();
+        dto.mw_answr = mwAnswrRepository.findAllByLastUpdDtAfterAndCrntRecFlgOrLastUpdDtAfterAndDelFlg( syncDate,true,syncDate, true );
+        dto.mw_brnch = mwBrnchRepository.findAllByLastUpdDtAfterAndCrntRecFlgOrLastUpdDtAfterAndDelFlg( syncDate,true,syncDate, true );;//
+        dto.mw_emp = mwEmpRepository.findAll();
+        dto.mw_qstnr = mwQstnrRepository.findAllByLastUpdDtAfterAndCrntRecFlgOrLastUpdDtAfterAndDelFlg( syncDate,true,syncDate, true );
+        dto.mw_qst = mwQstRepository.findAllByLastUpdDtAfterAndCrntRecFlgOrLastUpdDtAfterAndDelFlg( syncDate,true,syncDate, true );
+        //dto.mw_ref_cd_grp = mwRefCdGrpRepository.findAllByCrntRecFlg( true );
+        dto.mw_ref_cd_val = mwRefCdValRepository.findAllByLastUpdDtAfterAndCrntRecFlgOrLastUpdDtAfterAndDelFlg( syncDate,true,syncDate, true );
+        dto.mw_adt_isu = mwAdtIsuRepository.findAllByLastUpdDtAfterAndCrntRecFlgOrLastUpdDtAfterAndDelFlg( syncDate,true,syncDate, true );
+        dto.mw_adt_ctgry = mwAdtCtgryRepository.findAllByLastUpdDtAfterAndCrntRecFlgOrLastUpdDtAfterAndDelFlg( syncDate,true,syncDate, true );
+        dto.mw_adt_sb_ctgry = mwAdtSbCtgryRepository.findAllByLastUpdDtAfterAndCrntRecFlgOrLastUpdDtAfterAndDelFlg( syncDate,true,syncDate, true );
+        MwEmp emp = mwEmpRepository.findOneByEmpLanId( id );
+        if ( emp != null ) {
+            List< MwAdtVst > mw_adt_vsts = mwAdtVstRepository.findAllByAsgnToAndLastUpdDtAfterAndCrntRecFlgOrLastUpdDtAfterAndDelFlg( emp.getEmpSeq(),  syncDate,true,syncDate, true  );
+            dto.mw_adt_vst = new ArrayList<>();
+            mw_adt_vsts.forEach( vst -> {
+                MwAdtVstDto sdto = new MwAdtVstDto();
+                sdto.DomainToDto( vst );
+                dto.mw_adt_vst.add( sdto );
+            } );
+        }
+        return dto;
+
+    }
+    
+    public TabDto getOneDvcRgstr( String id ) {
         DvcRgstrDto dto = new DvcRgstrDto();
+        TabDto tabDto =null;
         MwDvcRgstr dvc1 = mwDvcRgstryRepository.findOneByDvcAddrAndCrntRecFlgAndDelFlg( id, true, false );
         dto.dvcAddr = dvc1.getDvcAddr();
         if ( dvc1 != null ) {
@@ -292,11 +334,19 @@ public class ComplianceService {
                 dto.seq = emp.getEmpSeq();
                 dto.type = "BM > " + emp.getEmpLanId();
             }
+            if ( dvc1.getEntyTypFlg() == 3 ) {
+            	tabDto = ( dvc1.getSyncDt() == null) ? getDataForTab( id )
+                        : traverseDataForTab(   dvc1.getSyncDt() , id );
+
+                dvc1.setSyncTmpDt( Instant.now() );
+                mwDvcRgstryRepository.save( dvc1 );
+
+            }
 
         }
-        return dto;
+        return tabDto;
     }
-
+ 
     @Transactional
     public ResponseEntity submitDataForCompliance( ComplianceSubmitDto dto, String curUser ) {
 
@@ -406,7 +456,6 @@ public class ComplianceService {
                 }
             } );
         }
-        
         calScore( vst.getAdtVstSeq(), vst.getBrnchSeq() );
         return ResponseEntity.ok().body( "{\"body\":\"Success\"}" );
     }
@@ -471,7 +520,8 @@ public class ComplianceService {
             dto.bdoNm = obj[ 49 ] == null ? "" : obj[ 49 ].toString();
             dto.lastRotated = obj[ 50 ] == null ? "" : obj[ 50 ].toString();
             dto.odInst = obj[ 51 ] == null ? "" : obj[ 51 ].toString();
-
+            dto.chkNum = obj[ 52 ] == null ? "" : obj[ 52 ].toString();
+            
             resp.add( dto );
         }
         return resp;
@@ -494,6 +544,64 @@ public class ComplianceService {
         return resp;
     }
 
+    
+    
+    public ResponseEntity updateBrnchVst( AdtVstDto dto, String curUser ) {
+    	 Long pendingStsKey = 0L;
+         MwRefCdVal val = mwRefCdValRepository.findRefCdByGrpAndVal( "0358", "01385" );
+ 		System.out.print("1) Update Adt VST: "+dto);
+
+         if ( val != null )
+             pendingStsKey = val.getRefCdSeq();
+    	MwAdtVst exVst=mwAdtVstRepository.findOneByAdtVstSeqAndCrntRecFlg(dto.adtVstSeq,true);
+    	if(exVst!=null) {
+    		exVst.setCrntRecFlg( false );
+            exVst.setDelFlg( true );
+            exVst.setEffEndDt( Instant.now() );
+            exVst.setLastUpdBy( curUser );
+            exVst.setLastUpdDt( Instant.now() );
+            mwAdtVstRepository.save( exVst );
+            MwAdtVst vst = new MwAdtVst();
+    		vst.setAdtVstSeq( exVst.getAdtVstSeq() );
+            vst.setAdtFlg( dto.adtFlg );
+            vst.setAsgnTo( dto.asgnTo );
+            vst.setBrnchSeq( dto.brnchSeq );
+            vst.setCrntRecFlg( true );
+            vst.setCrtdBy( curUser );
+            vst.setCrtdDt( Instant.now() );
+            vst.setDelFlg( false );
+            vst.setEffStartDt( Instant.now() );
+            vst.setStrtDt( dto.strtDt.toInstant() );
+            vst.setEndDt( dto.endDt.toInstant() );
+            vst.setLastUpdBy( curUser );
+            vst.setLastUpdDt( Instant.now() );
+            vst.setVstStsKey( pendingStsKey );
+            vst.setVstId( exVst.getVstId());
+            vst.setTrgtClnt( ( long ) dto.trgtClnt );
+            mwAdtVstRepository.save( vst );
+            System.out.print("Update Adt VST: "+vst);
+
+            return ResponseEntity.ok().body( vst );
+    	}
+        return ResponseEntity.badRequest().body( "{\"error\":\"Vst not found.\"}" );
+    }
+
+    //////////////////// Ask Umair to send AdtSeq
+    
+    public ResponseEntity deleteBrnchVst( Long vstSeq,String curUser ) {
+        MwAdtVst exVst = mwAdtVstRepository.findOneByAdtVstSeqAndCrntRecFlg(vstSeq, true );
+        if ( exVst != null ) {
+            exVst.setCrntRecFlg( false );
+            exVst.setDelFlg( true );
+            exVst.setEffEndDt( Instant.now() );
+            exVst.setLastUpdBy( curUser );
+            exVst.setLastUpdDt( Instant.now() );
+            mwAdtVstRepository.save( exVst );
+            return ResponseEntity.ok().body( exVst );
+        }
+        return ResponseEntity.badRequest().body( "{\"error\":\"Vst not found.\"}" );
+    }    
+    
     public MwAdtVst addNewVst( AdtVstDto dto, String curUser ) {
         Long pendingStsKey = 0L;
         MwRefCdVal val = mwRefCdValRepository.findRefCdByGrpAndVal( "0358", "01385" );
@@ -503,20 +611,20 @@ public class ComplianceService {
         Long seq = SequenceFinder.findNextVal( Sequences.ADT_VST_SEQ );
         vst.setAdtVstSeq( seq );
         vst.setAdtFlg( dto.adtFlg );
-        vst.setAsgnTo( dto.assignedTo );
+        vst.setAsgnTo( dto.asgnTo );
         vst.setBrnchSeq( dto.brnchSeq );
         vst.setCrntRecFlg( true );
         vst.setCrtdBy( curUser );
         vst.setCrtdDt( Instant.now() );
         vst.setDelFlg( false );
         vst.setEffStartDt( Instant.now() );
-        vst.setStrtDt( dto.startDt.toInstant() );
+        vst.setStrtDt( dto.strtDt.toInstant() );
         vst.setEndDt( dto.endDt.toInstant() );
         vst.setLastUpdBy( curUser );
         vst.setLastUpdDt( Instant.now() );
         vst.setVstStsKey( pendingStsKey );
         vst.setVstId( String.format( "%04d", seq ) );
-        vst.setTrgtClnt( ( long ) dto.minNumCli );
+        vst.setTrgtClnt( ( long ) dto.trgtClnt );
         mwAdtVstRepository.save( vst );
         return vst;
     }
@@ -562,6 +670,7 @@ public class ComplianceService {
             vst.setAdtVstSeq( exVst.getAdtVstSeq() );
             vst.setAsgnTo( exVst.getAsgnTo() );
             vst.setBrnchSeq( exVst.getBrnchSeq() );
+            vst.setTrgtClnt(exVst.getTrgtClnt());
             vst.setCrtdDt( Instant.now() );
             vst.setStrtDt( exVst.getStrtDt() );
             vst.setEndDt( exVst.getEndDt() );
@@ -592,10 +701,11 @@ public class ComplianceService {
             vst.setCrtdBy( curUser );
             vst.setAdtFlg( dto.adtFlg );
             vst.setAdtVstSeq( exVst.getAdtVstSeq() );
-            vst.setAsgnTo( dto.assignedTo );
+            vst.setAsgnTo( dto.asgnTo );
+            vst.setTrgtClnt(exVst.getTrgtClnt());
             vst.setBrnchSeq( exVst.getBrnchSeq() );
             vst.setCrtdDt( Instant.now() );
-            vst.setStrtDt( dto.startDt.toInstant() );
+            vst.setStrtDt( dto.strtDt.toInstant() );
             vst.setEndDt( dto.endDt.toInstant() );
             vst.setVstStsKey( exVst.getVstStsKey() );
             vst.setVstId( exVst.getVstId() );
@@ -605,7 +715,6 @@ public class ComplianceService {
         }
         return ResponseEntity.badRequest().body( "{\"error\":\"Vst not found.\"}" );
     }
-
     public ResponseEntity deleteVst( Long seq, String curUser ) {
         MwAdtVst exVst = mwAdtVstRepository.findOneByAdtVstSeqAndCrntRecFlg( seq, true );
         if ( exVst != null ) {

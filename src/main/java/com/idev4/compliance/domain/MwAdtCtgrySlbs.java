@@ -31,10 +31,10 @@ public class MwAdtCtgrySlbs implements Serializable {
     private Long adtCtgrySeq;
 
     @Column ( name = "START_LMT" )
-    private Long startLmt;
+    private Double startLmt;
 
     @Column ( name = "END_LMT" )
-    private Long endLmt;
+    private Double endLmt;
 
     @Column ( name = "DED_SCR" )
     private Integer dedScr;
@@ -84,19 +84,19 @@ public class MwAdtCtgrySlbs implements Serializable {
         this.adtCtgrySeq = adtCtgrySeq;
     }
 
-    public Long getStartLmt() {
+    public Double getStartLmt() {
         return startLmt;
     }
 
-    public void setStartLmt( Long startLmt ) {
+    public void setStartLmt( Double startLmt ) {
         this.startLmt = startLmt;
     }
 
-    public Long getEndLmt() {
+    public Double getEndLmt() {
         return endLmt;
     }
 
-    public void setEndLmt( Long endLmt ) {
+    public void setEndLmt( Double endLmt ) {
         this.endLmt = endLmt;
     }
 

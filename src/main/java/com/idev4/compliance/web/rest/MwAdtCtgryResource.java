@@ -22,8 +22,12 @@ import com.codahale.metrics.annotation.Timed;
 import com.idev4.compliance.domain.MwAdtCtgry;
 import com.idev4.compliance.domain.MwAdtSubCtgry;
 import com.idev4.compliance.dto.AdtCtgryDto;
+import com.idev4.compliance.dto.AdtCtgrySlbDto;
+import com.idev4.compliance.dto.AdtIsuDto;
 import com.idev4.compliance.dto.AdtSubCtgryDto;
 import com.idev4.compliance.service.MwAdtCtgryService;
+import com.idev4.compliance.domain.MwAdtIsu;
+import com.idev4.compliance.domain.MwAdtCtgrySlbs;
 
 import io.github.jhipster.web.util.ResponseUtil;
 
@@ -114,4 +118,54 @@ public class MwAdtCtgryResource {
         }
     }
 
+    @PostMapping ( "/add-adt-isu" )
+    @Timed
+    public ResponseEntity< MwAdtIsu > createMwAdtIsu( @RequestBody AdtIsuDto dto ) throws URISyntaxException {
+        log.debug( "REST request to save MwAdtIsu : {}", dto );
+        return ResponseEntity.ok().body( mwAdtCtgryService.saveMwAdtIsu( dto ) );
+    }
+    @DeleteMapping ( "/mw-adt-isu/{adtIsuSeq}" )
+    @Timed
+    public ResponseEntity< Map > deleteMwAdtIsu( @PathVariable Long adtIsuSeq ) {
+        log.debug( "REST request to delete MwAdtIsu : {}", adtIsuSeq );
+        Map< String, String > resp = new HashMap< String, String >();
+        MwAdtIsu ctgry = mwAdtCtgryService.deleteMwAdtIsu( adtIsuSeq );
+        if ( ctgry != null ) {
+            resp.put( "success", "Deleted Successfully" );
+            return ResponseEntity.ok().body( resp );
+        } else {
+            resp.put( "error", "Invalid Adt Isuue Seq" );
+            return ResponseEntity.badRequest().body( resp );
+        }
+    }
+    @GetMapping ( "/get-mw-isu/{sbCtgrySeq}" )
+    @Timed
+    public ResponseEntity< List< MwAdtIsu > > getMwAdtIsu( @PathVariable Long sbCtgrySeq ) {
+        return ResponseUtil.wrapOrNotFound( Optional.ofNullable( mwAdtCtgryService.getAllIsu( sbCtgrySeq ) ) );
+    }
+
+    
+    
+//    @PostMapping ( "/add-adt-ctgry-slb" )
+//    @Timed
+//    public ResponseEntity< MwAdtCtgrySlbs > createMwAdtCtgrySlb( @RequestBody AdtCtgrySlbDto dto ) throws URISyntaxException {
+//        log.debug( "REST request to save MwAdtIsu : {}", dto );
+//        return ResponseEntity.ok().body( mwAdtCtgryService.saveMwAdtCtgrySlb( dto ) );
+//    }
+//    
+//    
+ 
+    
+    @PostMapping ( "/add-adt-ctgry-slb" )
+    @Timed
+    public ResponseEntity< List<MwAdtCtgrySlbs>  > createMwAdtCtgrySlb( @RequestBody List<AdtCtgrySlbDto> dto ) throws URISyntaxException {
+//        log.debug( "REST request to save MwAdtIsu : {}", dto );
+        return ResponseEntity.ok().body( mwAdtCtgryService.saveMwAdtCtgrySlb( dto ) );
+    }
+    @GetMapping ( "/get-adt-ctgry-slb/{adtCtgrySeq}" )
+    @Timed
+    public ResponseEntity< List< MwAdtCtgrySlbs > > getMwAdtCtgrySlbs( @PathVariable Long adtCtgrySeq ) {
+        return ResponseUtil.wrapOrNotFound( Optional.ofNullable( mwAdtCtgryService.getAllCtgrySlbs( adtCtgrySeq ) ) );
+    }
+    
 }

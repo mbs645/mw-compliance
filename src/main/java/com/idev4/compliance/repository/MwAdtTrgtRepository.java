@@ -17,6 +17,9 @@ public interface MwAdtTrgtRepository extends JpaRepository< MwAdtTrgt, Long > {
 
     public List< MwAdtTrgt > findAllByTrgtYrAndBrnchSeqAndCrntRecFlg( long trgtYr, long brnchSeq, boolean flag );
 
+    public List< MwAdtTrgt > findAllByTrgtYrAndCrntRecFlg( long trgtYr, boolean flag );
+
+    
     public List< MwAdtTrgt > findAllByCrntRecFlg( boolean flag );
 
     public MwAdtTrgt findOneByAdtTrgtSeqAndCrntRecFlg( long seq, boolean flag );

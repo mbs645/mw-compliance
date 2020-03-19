@@ -51,6 +51,18 @@ public class RiskManagment {
 		return ResponseEntity.ok().body(complianceService.addNewVst(dto, SecurityContextHolder.getContext().getAuthentication().getName()));
 	}
 	
+	@PostMapping("/update-brnch-vst")
+    public ResponseEntity updateAdtVst( @RequestBody AdtVstDto dto) throws URISyntaxException {
+		return complianceService.updateBrnchVst(dto, SecurityContextHolder.getContext().getAuthentication().getName());
+	}
+	
+	@DeleteMapping("/delete-brnch-vst/{vstSeq}")
+	public ResponseEntity deleteBrnchVst(@PathVariable Long vstSeq) {
+		return complianceService.deleteBrnchVst( vstSeq, SecurityContextHolder.getContext().getAuthentication().getName());
+	}
+	
+	
+	
 	@GetMapping("/update-vst-status/{vstSeq}")
 	public ResponseEntity updateVstStatus(@PathVariable Long vstSeq) {
 		log.debug("REST request to update status ADT VST For BRNCH");

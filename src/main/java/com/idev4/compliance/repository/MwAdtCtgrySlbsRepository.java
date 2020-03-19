@@ -13,7 +13,13 @@ import com.idev4.compliance.domain.MwAdtCtgrySlbs;
 @Repository
 public interface MwAdtCtgrySlbsRepository extends JpaRepository< MwAdtCtgrySlbs, Long > {
 
-    public MwAdtCtgry findOneByAdtCtgrySlbsSeqAndCrntRecFlg( Long seq, boolean flag );
+//    public MwAdtCtgry findOneByAdtCtgrySlbsSeqAndCrntRecFlg( Long seq, boolean flag );
+
+    public MwAdtCtgrySlbs findOneByAdtCtgrySlbsSeqAndCrntRecFlg( Long seq, boolean flag );
+
+    public List<MwAdtCtgrySlbs> findAllByAdtCtgrySeqAndCrntRecFlgOrderByStartLmtAsc( Long seq, boolean flag );
+
+    public  MwAdtCtgrySlbs  findOneByCrntRecFlg( boolean flag );
 
     public List< MwAdtCtgrySlbs > findAllByCrntRecFlg( boolean flag );
 }

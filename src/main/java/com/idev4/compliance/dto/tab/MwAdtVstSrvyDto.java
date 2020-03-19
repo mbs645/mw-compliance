@@ -35,6 +35,8 @@ public class MwAdtVstSrvyDto {
     public String crtd_dt;
     
     public String cmnt;
+    
+    public String set_answr_val;
 
     public Integer crnt_rec_flg;
 
@@ -53,6 +55,7 @@ public class MwAdtVstSrvyDto {
         dom.setEntyTypFlg(enty_typ_flg);
         dom.setLastUpdBy(last_upd_by);
         dom.setQstSeq(qst_seq);
+        dom.setAnswrVal(set_answr_val);
         
         try {
             dom.setLastUpdDt( Instant.now() );
@@ -80,6 +83,7 @@ public class MwAdtVstSrvyDto {
 		crtd_by= dom.getCrtdBy();
 		crtd_dt= ( dom.getCrtdDt() == null ) ? "" : Common.GetFormattedDateForTab( dom.getCrtdDt(), false );
 		cmnt= dom.getCmnt();
+		set_answr_val=dom.getAnswrVal();
 		crnt_rec_flg= ( dom.getCrntRecFlg() == null ) ? 0 : ( dom.getCrntRecFlg() ? 1 : 0 );
 		del_flg= ( dom.getDelFlg() == null ) ? 0 : ( dom.getDelFlg() ? 1 : 0 );
     }

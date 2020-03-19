@@ -72,11 +72,11 @@ public class MwAdtTrgtResource {
      *            the id of the mwArea to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the mwArea, or with status 404 (Not Found)
      */
-    @GetMapping ( "/mw-trgts/{trgtYr}/{brnchSeq}" )
+    @GetMapping ( "/mw-trgts/{trgtYr}" )
     @Timed
-    public ResponseEntity< List< MwAdtTrgt > > getMwArea( @PathVariable Long trgtYr, @PathVariable Long brnchSeq ) {
-        log.debug( "REST request to get MwAdtTrgt : {}", trgtYr + " -- BRNCH SEQ : " + brnchSeq );
-        List< MwAdtTrgt > trgts = mwAdtTrgtService.getAllTrgtsForBrnch( trgtYr, brnchSeq );
+    public ResponseEntity< List< MwAdtTrgt > > getMwArea( @PathVariable Long trgtYr ) {
+        log.debug( "REST request to get MwAdtTrgt : {}", trgtYr );
+        List< MwAdtTrgt > trgts = mwAdtTrgtService.getAllTrgtsForBrnch( trgtYr);
         return ResponseUtil.wrapOrNotFound( Optional.ofNullable( trgts ) );
     }
 

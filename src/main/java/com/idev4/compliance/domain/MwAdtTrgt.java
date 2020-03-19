@@ -59,8 +59,19 @@ public class MwAdtTrgt implements Serializable {
 
     @Column ( name = "crnt_rec_flg" )
     private Boolean crntRecFlg;
+    
+    @Column ( name = "VST_TYP" )
+    private Long vstTyp;
 
-    public Long getAdtTrgtSeq() {
+    public Long getVstTyp() {
+		return vstTyp;
+	}
+
+	public void setVstTyp(Long vstTyp) {
+		this.vstTyp = vstTyp;
+	}
+
+	public Long getAdtTrgtSeq() {
         return adtTrgtSeq;
     }
 

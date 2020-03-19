@@ -10,5 +10,7 @@ public class AdtTrgrDto {
     public Long trgt;
 
     public Long trgtYr;
+    
+    public Long adtFlg;
 
 }

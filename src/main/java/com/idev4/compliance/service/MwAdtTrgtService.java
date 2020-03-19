@@ -1,4 +1,3 @@
-
 package com.idev4.compliance.service;
 
 import java.time.Instant;
@@ -107,6 +106,7 @@ public class MwAdtTrgtService {
         trgt.setBrnchSeq( dto.brnchSeq );
         trgt.setTrgt( dto.trgt );
         trgt.setTrgtYr( dto.trgtYr );
+        trgt.setVstTyp(dto.adtFlg);
         return mwAdtTrgtRepository.save( trgt );
     }
 
@@ -137,10 +137,11 @@ public class MwAdtTrgtService {
         trgt.setBrnchSeq( dto.brnchSeq );
         trgt.setTrgt( dto.trgt );
         trgt.setTrgtYr( dto.trgtYr );
+        trgt.setVstTyp(dto.adtFlg);
         return mwAdtTrgtRepository.save( trgt );
     }
 
-    public List< MwAdtTrgt > getAllTrgtsForBrnch( long trgtYr, long brnchSeq ) {
-        return mwAdtTrgtRepository.findAllByTrgtYrAndBrnchSeqAndCrntRecFlg( trgtYr, brnchSeq, true );
+    public List< MwAdtTrgt > getAllTrgtsForBrnch( long trgtYr ) {
+        return mwAdtTrgtRepository.findAllByTrgtYrAndCrntRecFlg( trgtYr, true );
     }
 }

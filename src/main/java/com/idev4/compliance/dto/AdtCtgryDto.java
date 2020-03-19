@@ -20,4 +20,8 @@ public class AdtCtgryDto {
     public String ctgryScr;
 
     public Integer calcTyp;
+    
+    public Integer ctgryEntyFlg;
+
+    
 }

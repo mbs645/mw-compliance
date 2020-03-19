@@ -53,6 +53,7 @@ public class LoanInfoDto {
 	public String bdoNm;
 	public String lastRotated;
 	public String odInst;
+	public String chkNum;
 
 
 

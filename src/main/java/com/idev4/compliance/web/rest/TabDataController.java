@@ -36,9 +36,13 @@ public class TabDataController {
     public ResponseEntity< TabDto > getComplianceDataForTab() {
         log.debug( "REST request to get Data For Compliance" );
         return ResponseEntity.ok()
-                .body( complianceService.getDataForTab( SecurityContextHolder.getContext().getAuthentication().getName() ) );
+                .body( complianceService.getOneDvcRgstr( SecurityContextHolder.getContext().getAuthentication().getName() ) );
+//        return ResponseEntity.ok()
+//                .body( complianceService.getDataForTab( SecurityContextHolder.getContext().getAuthentication().getName() ) );
+//    
+    
     }
-
+    
     /* @GetMapping ( "/calculate-score/{vstseq}/{brnch}" )
     @Timed
     public Long calculateScore( HttpServletResponse response, @PathVariable long vstseq, @PathVariable long brnch ) throws IOException {
@@ -56,8 +60,16 @@ public class TabDataController {
     @GetMapping ( "/compliance-clnt-data/{brnchSeq}/{vstSeq}" )
     public ResponseEntity< List< LoanInfoDto > > getComplianceClntData( @PathVariable Integer brnchSeq, @PathVariable Long vstSeq ) {
         log.debug( "REST request to get Data For Compliance" );
-        return complianceService.updateVstStsViaTab( SecurityContextHolder.getContext().getAuthentication().getName(), brnchSeq, vstSeq );
+        return complianceService.compClntData( SecurityContextHolder.getContext().getAuthentication().getName(), brnchSeq, vstSeq );
     }
+    
+    @GetMapping ( "/update-status/{vstSeq}" )
+    public ResponseEntity< List< LoanInfoDto > > getComplianceClntData(@PathVariable Long vstSeq ) {
+        log.debug( "REST request to get Data For Compliance" );
+        return complianceService.updateVstStsViaTab( SecurityContextHolder.getContext().getAuthentication().getName(),  vstSeq );
+    }
+    
+
 
     @PostMapping ( "/submit-compliance-data" )
     public ResponseEntity submitComplianceData( @RequestBody ComplianceSubmitDto dto ) {
@@ -91,4 +103,6 @@ public class TabDataController {
         log.debug( "REST request to submit-compliance-data " );
         return complianceService.submitDataForCompliance( dto, SecurityContextHolder.getContext().getAuthentication().getName() );
     }
+    
+    
 }
