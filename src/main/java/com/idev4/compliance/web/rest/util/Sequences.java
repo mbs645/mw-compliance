@@ -25,4 +25,6 @@ public class Sequences {
 
 
     public final static String ADT_BRNCH_RKNG_SEQ = "ADT_BRNCH_RKNG_SEQ";
+
+    public final static String ADT_VST_RANKING_SEQ = "ADT_VST_RANKING_SEQ";
 }

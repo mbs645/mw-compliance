@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import com.idev4.compliance.domain.MwAdcChckQstnr;
 import com.idev4.compliance.domain.MwAdcChcks;
 import com.idev4.compliance.domain.MwAdtFndng;
 import com.idev4.compliance.domain.MwAdtVst;
+import com.idev4.compliance.domain.MwAdtVstRanking;
 import com.idev4.compliance.domain.MwAdtVstSrvy;
 import com.idev4.compliance.domain.MwAppRcon;
 import com.idev4.compliance.domain.MwBrnchEmpRel;
@@ -41,6 +43,7 @@ import com.idev4.compliance.repository.MwAdtFndngRepository;
 import com.idev4.compliance.repository.MwAdtIsuRepository;
 import com.idev4.compliance.repository.MwAdtSbCtgryRepository;
 import com.idev4.compliance.repository.MwAdtVstRepository;
+import com.idev4.compliance.repository.MwAdtVstRkngRepository;
 import com.idev4.compliance.repository.MwAdtVstSrvyRepository;
 import com.idev4.compliance.repository.MwAnswrRepository;
 import com.idev4.compliance.repository.MwAppRconRepository;
@@ -98,11 +101,12 @@ public class ComplianceService {
 
     private final MwAdtBrnchRnkngRepository mwAdtBrnchRnkngRepository;
 
+
+    private final MwAdtVstRkngRepository mwAdtVstRkngRepository;
     private final MwAdcChcksRepository mwAdcChcksRepository;
 
     private final MwAdcChckQstnrRepository mwAdcChckQstnrRepository;
 
-    
     private final DateFormat formatter = new SimpleDateFormat( "dd-MM-yyyy hh:mm:ss" );
 
     private final DateFormat formatterDate = new SimpleDateFormat( "dd-MM-yyyy" );
@@ -118,7 +122,9 @@ public class ComplianceService {
             MwPortEmpRelRespository mwPortEmpRelRepository, MwDvcRgstrRepository mwDvcRgstryRepository,
             MwAdtIsuRepository mwAdtIsuRepository, MwAdtCtgryRepository mwAdtCtgryRepository, MwAdtSbCtgryRepository mwAdtSbCtgryRepository,
             MwAppRconRepository mwAppRconRepository, MwAdtBrnchRnkngRepository mwAdtBrnchRnkngRepository,
-            MwRefCdGrpRepository mwRefCdGrpRepository,MwAdcChcksRepository mwAdcChcksRepository,MwAdcChckQstnrRepository mwAdcChckQstnrRepository ) {
+
+            MwRefCdGrpRepository mwRefCdGrpRepository, MwAdcChcksRepository mwAdcChcksRepository,
+            MwAdcChckQstnrRepository mwAdcChckQstnrRepository ) {
         this.em = em;
         this.mwQstnrRepository = mwQstnrRepository;
         this.mwQstRepository = mwQstRepository;
@@ -137,8 +143,11 @@ public class ComplianceService {
         this.mwAppRconRepository = mwAppRconRepository;
         this.mwAdtBrnchRnkngRepository = mwAdtBrnchRnkngRepository;
         this.mwRefCdGrpRepository = mwRefCdGrpRepository;
+        this.mwAdtVstRkngRepository = mwAdtVstRkngRepository;
+
         this.mwAdcChcksRepository = mwAdcChcksRepository;
         this.mwAdcChckQstnrRepository = mwAdcChckQstnrRepository;
+
 
         this.mwAdtCtgryRepository = mwAdtCtgryRepository;
     }
@@ -253,7 +262,7 @@ public class ComplianceService {
         return ResponseEntity.badRequest().body( "{\"error\":\"Vst not found.\"}" );
     }
 
-    public List< LoanInfoDto > getClientDataForTab( String lanId, Integer brnchSeq) {
+    public List< LoanInfoDto > getClientDataForTab( String lanId, Integer brnchSeq ) {
         List< LoanInfoDto > app_info = new ArrayList<>();
 
         app_info = complianceData( brnchSeq );
@@ -426,10 +435,10 @@ public class ComplianceService {
                 if ( adcDto.adc_chks_seq != null ) {
                     MwAdcChcks adcChcks = mwAdcChcksRepository.findOneByAdcChksSeqAndCrntRecFlg( adcDto.adc_chks_seq, true );
                     if ( adcChcks != null ) {
-                    	adcChcks.setCrntRecFlg( false );
-                    	adcChcks.setDelFlg( true );
-                    	adcChcks.setLastUpdBy( curUser );
-                    	adcChcks.setLastUpdDt( Instant.now() );
+                        adcChcks.setCrntRecFlg( false );
+                        adcChcks.setDelFlg( true );
+                        adcChcks.setLastUpdBy( curUser );
+                        adcChcks.setLastUpdDt( Instant.now() );
                         mwAdcChcksRepository.save( adcChcks );
                     }
                     MwAdcChcks rco = adcDto.DtoToDomain( formatter, formatterDate );
@@ -438,17 +447,18 @@ public class ComplianceService {
                 }
             } );
         }
-        
+
         if ( dto.mw_adc_chck_qstnr != null ) {
             dto.mw_adc_chck_qstnr.forEach( adcDto -> {
                 if ( adcDto.adc_chks_qstnr_seq != null ) {
-                	MwAdcChckQstnr adcChcks = mwAdcChckQstnrRepository.findOneByAdcChksQstnrSeqAndCrntRecFlg( adcDto.adc_chks_qstnr_seq, true );
+                    MwAdcChckQstnr adcChcks = mwAdcChckQstnrRepository.findOneByAdcChksQstnrSeqAndCrntRecFlg( adcDto.adc_chks_qstnr_seq,
+                            true );
                     if ( adcChcks != null ) {
-                    	adcChcks.setCrntRecFlg( false );
-                    	adcChcks.setDelFlg( true );
-                    	adcChcks.setLastUpdBy( curUser );
-                    	adcChcks.setLastUpdDt( Instant.now() );
-                    	mwAdcChckQstnrRepository.save( adcChcks );
+                        adcChcks.setCrntRecFlg( false );
+                        adcChcks.setDelFlg( true );
+                        adcChcks.setLastUpdBy( curUser );
+                        adcChcks.setLastUpdDt( Instant.now() );
+                        mwAdcChckQstnrRepository.save( adcChcks );
                     }
                     MwAdcChckQstnr rco = adcDto.DtoToDomain( formatter, formatterDate );
 
@@ -456,6 +466,10 @@ public class ComplianceService {
                 }
             } );
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> ed65e7b04f922e1de175e678fb4491af1f513a5b
         calScore( vst.getAdtVstSeq(), vst.getBrnchSeq() );
         return ResponseEntity.ok().body( "{\"body\":\"Success\"}" );
     }
@@ -850,7 +864,8 @@ public class ComplianceService {
         public String loanId;
     }
 
-    public void calScore( Long vstSeq, Long brnchSeq ) {
+    @Transactional
+    public Long calScore( Long vstSeq, Long brnchSeq ) {
 
         // Long brnchScr = mwAdtFndngRepository.getVstScrSum( vstSeq );
         // List< MwAdtBrnchRnkng > brnchRnkngList = mwAdtBrnchRnkngRepository.findOneByBrnchSeqAndCrntRecFlg( brnchSeq, true );
@@ -888,17 +903,31 @@ public class ComplianceService {
             } catch ( Exception e ) {
             }
 
+            MwAdtVstRanking rnkng = new MwAdtVstRanking();
+            String curUser = SecurityContextHolder.getContext().getAuthentication().getName();
+            Long seq = SequenceFinder.findNextVal( Sequences.ADT_VST_RANKING_SEQ );
+            rnkng.setVstRkngSeq( seq );
+            rnkng.setScr( totalSum );
+            rnkng.setVstSeq( vstSeq );
+            rnkng.setCtgryTypSeq( new BigDecimal( o[ 0 ].toString() ).longValue() );
+            rnkng.setCrtdBy( curUser );
+            rnkng.setCrtdDt( Instant.now() );
+            rnkng.setDelFlg( false );
+            rnkng.setCrntRecFlg( true );
+            rnkng.setEffStartDt( Instant.now() );
+            rnkng.setLastUpdBy( curUser );
+            rnkng.setLastUpdDt( Instant.now() );
+            mwAdtVstRkngRepository.save( rnkng );
+
         }
 
         long totalSum1 = 0L;
-        Query res = em.createNativeQuery( " select ctg.ADT_CTGRY_SEQ,round(count(fnding.issue_key)/ \r\n"
-                + "  (select count(ENTY_SEQ) from MW_ADT_VST_SRVY avs where avs.ADT_VST_SEQ=fnding.ADT_VST_SEQ and avs.enty_typ_flg=1) *100,0) as cal_score  \r\n"
-                + "  from MW_ADT_FNDNG fnding    join MW_ADT_ISU isu on isu.ISU_ID = fnding.ISSUE_KEY AND isu.CRNT_REC_FLG = 1 \r\n"
-                + "join MW_ADT_SB_CTGRY sctg on sctg.ADT_CTGRY_SEQ = isu.ADT_ISU_SEQ AND sctg.CRNT_REC_FLG = 1 \r\n"
-                + "join MW_ADT_CTGRY ctg on ctg.ADT_CTGRY_SEQ = sctg.ADT_CTGRY_SEQ AND ctg.CRNT_REC_FLG = 1 AND ctg.CTGRY_ENTY_FLG =2 \r\n"
-                + "--join MW_ADT_VST_SRVY avs on avs.ADT_VST_SEQ = fnding.ADT_VST_SEQ and avs.CRNT_REC_FLG = 1 \r\n"
-                + " where fnding.CRNT_REC_FLG = 1 and fnding.ADT_VST_SEQ=:vstSeq   \r\n" + " and fnding.finding_typ_key=0\r\n"
-                + " group by ctg.ADT_CTGRY_SEQ,fnding.ADT_VST_SEQ " ).setParameter( "vstSeq", vstSeq );
+        Query res = em.createNativeQuery( " select ctg.ADT_CTGRY_SEQ, SUM(fnding.SCR)as scr\r\n" + "from MW_ADT_FNDNG fnding \r\n"
+                + "join MW_ADT_ISU isu on isu.ISU_ID = fnding.ISSUE_KEY AND isu.CRNT_REC_FLG = 1\r\n"
+                + "join MW_ADT_SB_CTGRY sctg on sctg.ADT_CTGRY_SEQ = isu.ADT_ISU_SEQ AND sctg.CRNT_REC_FLG = 1\r\n"
+                + "join MW_ADT_CTGRY ctg on ctg.ADT_CTGRY_SEQ = sctg.ADT_CTGRY_SEQ AND ctg.CRNT_REC_FLG = 1 AND ctg.CTGRY_ENTY_FLG =2\r\n"
+                + "where fnding.CRNT_REC_FLG = 1 and fnding.ADT_VST_SEQ=123\r\n" + "group by ctg.ADT_CTGRY_SEQ\r\n" + "order by 1 " )
+                .setParameter( "vstSeq", vstSeq );
 
         List< Object[] > ob = res.getResultList();
 
@@ -919,6 +948,22 @@ public class ComplianceService {
                 }
             } catch ( Exception e ) {
             }
+
+            MwAdtVstRanking rnkng = new MwAdtVstRanking();
+            String curUser = SecurityContextHolder.getContext().getAuthentication().getName();
+            Long seq = SequenceFinder.findNextVal( Sequences.ADT_VST_RANKING_SEQ );
+            rnkng.setVstRkngSeq( seq );
+            rnkng.setScr( totalSum );
+            rnkng.setVstSeq( vstSeq );
+            rnkng.setCtgryTypSeq( new BigDecimal( b[ 0 ].toString() ).longValue() );
+            rnkng.setCrtdBy( curUser );
+            rnkng.setCrtdDt( Instant.now() );
+            rnkng.setDelFlg( false );
+            rnkng.setCrntRecFlg( true );
+            rnkng.setEffStartDt( Instant.now() );
+            rnkng.setLastUpdBy( curUser );
+            rnkng.setLastUpdDt( Instant.now() );
+            mwAdtVstRkngRepository.save( rnkng );
 
         }
         //
@@ -942,7 +987,9 @@ public class ComplianceService {
         if ( seq != null ) {
             seq.setVstScr( 100 - ( totalSum + totalSum1 ) );
             mwAdtVstRepository.save( seq );
-        }
 
+        }
+        return ( 100 - ( totalSum + totalSum1 ) );
     }
+
 }
