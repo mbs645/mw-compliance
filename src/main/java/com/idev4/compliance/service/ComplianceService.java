@@ -122,9 +122,8 @@ public class ComplianceService {
             MwPortEmpRelRespository mwPortEmpRelRepository, MwDvcRgstrRepository mwDvcRgstryRepository,
             MwAdtIsuRepository mwAdtIsuRepository, MwAdtCtgryRepository mwAdtCtgryRepository, MwAdtSbCtgryRepository mwAdtSbCtgryRepository,
             MwAppRconRepository mwAppRconRepository, MwAdtBrnchRnkngRepository mwAdtBrnchRnkngRepository,
-
             MwRefCdGrpRepository mwRefCdGrpRepository, MwAdcChcksRepository mwAdcChcksRepository,
-            MwAdcChckQstnrRepository mwAdcChckQstnrRepository ) {
+            MwAdcChckQstnrRepository mwAdcChckQstnrRepository, MwAdtVstRkngRepository mwAdtVstRkngRepository ) {
         this.em = em;
         this.mwQstnrRepository = mwQstnrRepository;
         this.mwQstRepository = mwQstRepository;
@@ -144,11 +143,8 @@ public class ComplianceService {
         this.mwAdtBrnchRnkngRepository = mwAdtBrnchRnkngRepository;
         this.mwRefCdGrpRepository = mwRefCdGrpRepository;
         this.mwAdtVstRkngRepository = mwAdtVstRkngRepository;
-
         this.mwAdcChcksRepository = mwAdcChcksRepository;
         this.mwAdcChckQstnrRepository = mwAdcChckQstnrRepository;
-
-
         this.mwAdtCtgryRepository = mwAdtCtgryRepository;
     }
 
@@ -326,11 +322,11 @@ public class ComplianceService {
 
     }
     
-    public TabDto getOneDvcRgstr( String id ) {
+    public TabDto getOneDvcRgstr( String id ,String mac) {
         DvcRgstrDto dto = new DvcRgstrDto();
         TabDto tabDto =null;
-        MwDvcRgstr dvc1 = mwDvcRgstryRepository.findOneByDvcAddrAndCrntRecFlgAndDelFlg( id, true, false );
-        dto.dvcAddr = dvc1.getDvcAddr();
+        MwDvcRgstr dvc1 = mwDvcRgstryRepository.findOneByDvcAddrAndCrntRecFlgAndDelFlg( mac, true, false );
+//        dto.dvcAddr = dvc1.getDvcAddr();
         if ( dvc1 != null ) {
             if ( dvc1.getEntyTypFlg() == 1 ) {
                 MwPortEmpRel port = mwPortEmpRelRepository.findOneByPortSeqAndCrntRecFlg( dvc1.getEntyTypSeq(), true );
@@ -466,10 +462,7 @@ public class ComplianceService {
                 }
             } );
         }
-<<<<<<< HEAD
-=======
 
->>>>>>> ed65e7b04f922e1de175e678fb4491af1f513a5b
         calScore( vst.getAdtVstSeq(), vst.getBrnchSeq() );
         return ResponseEntity.ok().body( "{\"body\":\"Success\"}" );
     }

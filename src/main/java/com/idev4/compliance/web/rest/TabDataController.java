@@ -37,11 +37,11 @@ public class TabDataController {
         this.complianceService = complianceService;
     }
 
-    @GetMapping ( "/compliance-data-tab" )
-    public ResponseEntity< TabDto > getComplianceDataForTab() {
+    @GetMapping ( "/compliance-data-tab/{mac}" )
+    public ResponseEntity< TabDto > getComplianceDataForTab(@PathVariable String mac) {
         log.debug( "REST request to get Data For Compliance" );
         return ResponseEntity.ok()
-                .body( complianceService.getOneDvcRgstr( SecurityContextHolder.getContext().getAuthentication().getName() ) );
+                .body( complianceService.getOneDvcRgstr( SecurityContextHolder.getContext().getAuthentication().getName(),mac ) );
 //        return ResponseEntity.ok()
 //                .body( complianceService.getDataForTab( SecurityContextHolder.getContext().getAuthentication().getName() ) );
 //    
