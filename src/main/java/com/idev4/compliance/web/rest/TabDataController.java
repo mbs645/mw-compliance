@@ -37,16 +37,25 @@ public class TabDataController {
         this.complianceService = complianceService;
     }
 
-    @GetMapping ( "/compliance-data-tab/{mac}" )
-    public ResponseEntity< TabDto > getComplianceDataForTab(@PathVariable String mac) {
+    @GetMapping ( "/compliance-data-tab/{mac}/{syncFlg}" )
+    public ResponseEntity< TabDto > getComplianceDataForTab(@PathVariable String mac,@PathVariable Boolean syncFlg) {
         log.debug( "REST request to get Data For Compliance" );
         return ResponseEntity.ok()
-                .body( complianceService.getOneDvcRgstr( SecurityContextHolder.getContext().getAuthentication().getName(),mac ) );
+                .body( complianceService.getOneDvcRgstr( SecurityContextHolder.getContext().getAuthentication().getName(),mac,syncFlg ) );
 //        return ResponseEntity.ok()
 //                .body( complianceService.getDataForTab( SecurityContextHolder.getContext().getAuthentication().getName() ) );
 //    
     
     }
+    @GetMapping ( "/update-loan-sync-date/{mac}" )
+    @Timed
+    public ResponseEntity updateLoanSyncDate( @PathVariable String mac ) {
+        String str = complianceService.markSyncDate( mac );
+        if ( str == null )
+            return ResponseEntity.badRequest().body( "{'error': 'Device Not Registered'}" );
+        return ResponseEntity.ok().body( "{'message': 'Success'}" );
+    }
+
     
      @GetMapping ( "/calculate-score/{vstseq}/{brnch}" )
     @Timed

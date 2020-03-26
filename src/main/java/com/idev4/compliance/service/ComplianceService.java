@@ -321,27 +321,22 @@ public class ComplianceService {
         return dto;
 
     }
-    
-    public TabDto getOneDvcRgstr( String id ,String mac) {
-        DvcRgstrDto dto = new DvcRgstrDto();
+    public String markSyncDate( String mac ) {
+        MwDvcRgstr dvc = mwDvcRgstryRepository.findOneByDvcAddrAndCrntRecFlg( mac, true );
+        if ( dvc == null )
+            return null;
+        dvc.setStpSyncDt( dvc.getSyncTmpDt() );
+        mwDvcRgstryRepository.save( dvc );
+        return "Date Updated";
+    }
+    public TabDto getOneDvcRgstr( String id ,String mac,Boolean syncFlg) {
         TabDto tabDto =null;
-        MwDvcRgstr dvc1 = mwDvcRgstryRepository.findOneByDvcAddrAndCrntRecFlgAndDelFlg( mac, true, false );
+        MwDvcRgstr dvc1 = mwDvcRgstryRepository.findOneByDvcAddrAndCrntRecFlg( mac, true);
 //        dto.dvcAddr = dvc1.getDvcAddr();
         if ( dvc1 != null ) {
-            if ( dvc1.getEntyTypFlg() == 1 ) {
-                MwPortEmpRel port = mwPortEmpRelRepository.findOneByPortSeqAndCrntRecFlg( dvc1.getEntyTypSeq(), true );
-                MwEmp emp = mwEmpRepository.findOneByEmpSeq( port.getEmpSeq() );
-                dto.seq = emp.getEmpSeq();
-                dto.type = "BDO > " + emp.getEmpLanId();
-            } else if ( dvc1.getEntyTypFlg() == 2 ) {
-                MwBrnchEmpRel brnch = mwbrnchEmpRelRepository.findOneByBrnchSeqAndCrntRecFlg( dvc1.getEntyTypSeq(), true );
-                MwEmp emp = mwEmpRepository.findOneByEmpSeq( brnch.getEmpSeq() );
-                dto.seq = emp.getEmpSeq();
-                dto.type = "BM > " + emp.getEmpLanId();
-            }
             if ( dvc1.getEntyTypFlg() == 3 ) {
-            	tabDto = ( dvc1.getSyncDt() == null) ? getDataForTab( id )
-                        : traverseDataForTab(   dvc1.getSyncDt() , id );
+            	tabDto = ( dvc1.getStpSyncDt() == null || syncFlg) ? getDataForTab( id )
+                        : traverseDataForTab(   dvc1.getStpSyncDt() , id );
 
                 dvc1.setSyncTmpDt( Instant.now() );
                 mwDvcRgstryRepository.save( dvc1 );

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface MwDvcRgstrRepository extends JpaRepository< MwDvcRgstr , Long>{
 	
 	public  List<MwDvcRgstr> findAllByEntyTypFlgAndCrntRecFlgAndDelFlg(int entyFlg,boolean crntFlg,boolean delFlg);
-	public  MwDvcRgstr findOneByDvcAddrAndCrntRecFlgAndDelFlg(String addr,boolean crntFlg,boolean delFlg);
+	public  MwDvcRgstr findOneByDvcAddrAndCrntRecFlg(String addr,boolean crntFlg);
 //	public  List<String> findAllByEntyTypFlgAndCrntRecFlgAndDelFlg(int entyFlg,boolean crntFlg,boolean delFlg);
 
 	public List<MwDvcRgstr> findAllByCrntRecFlgAndDelFlg(boolean crntFlg,boolean delFlg);
