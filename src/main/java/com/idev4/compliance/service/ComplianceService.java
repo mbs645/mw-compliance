@@ -11,6 +11,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -56,6 +58,7 @@ import com.idev4.compliance.repository.MwQstRepository;
 import com.idev4.compliance.repository.MwQstnrRepository;
 import com.idev4.compliance.repository.MwRefCdGrpRepository;
 import com.idev4.compliance.repository.MwRefCdValRepository;
+import com.idev4.compliance.web.rest.TabDataController;
 import com.idev4.compliance.web.rest.util.Queries;
 import com.idev4.compliance.web.rest.util.SequenceFinder;
 import com.idev4.compliance.web.rest.util.Sequences;
@@ -112,6 +115,8 @@ public class ComplianceService {
     private final DateFormat formatterDate = new SimpleDateFormat( "dd-MM-yyyy" );
 
     private static long totSum = 0L;
+
+    private final Logger log = LoggerFactory.getLogger( ComplianceService.class );
 
     // private final MwBrnchRepository mwBrnchRepository;
 
@@ -458,6 +463,8 @@ public class ComplianceService {
             } );
         }
 
+        log.debug( ">>>>>>>>>>>>>>>>>>>>>>>>>>>> vst.getAdtVstSeq(): "+vst.getAdtVstSeq() );
+      
         calScore( vst.getAdtVstSeq(), vst.getBrnchSeq() );
         return ResponseEntity.ok().body( "{\"body\":\"Success\"}" );
     }
@@ -867,7 +874,6 @@ public class ComplianceService {
                 + "from MW_ADT_FNDNG fnding \r\n" + "join MW_ADT_ISU isu on isu.ISU_ID = fnding.ISSUE_KEY AND isu.CRNT_REC_FLG = 1\r\n"
                 + "join MW_ADT_SB_CTGRY sctg on sctg.ADT_CTGRY_SEQ = isu.ADT_ISU_SEQ AND sctg.CRNT_REC_FLG = 1\r\n"
                 + "join MW_ADT_CTGRY ctg on ctg.ADT_CTGRY_SEQ = sctg.ADT_CTGRY_SEQ AND ctg.CRNT_REC_FLG = 1 AND ctg.CTGRY_ENTY_FLG =1\r\n"
-                + "--join MW_ADT_VST_SRVY avs on avs.ADT_VST_SEQ = fnding.ADT_VST_SEQ and avs.CRNT_REC_FLG = 1\r\n"
                 + "where fnding.CRNT_REC_FLG = 1 and fnding.ADT_VST_SEQ=:vstSeq\r\n" + "and fnding.finding_typ_key=0\r\n"
                 + "group by ctg.ADT_CTGRY_SEQ,fnding.ADT_VST_SEQ " ).setParameter( "vstSeq", vstSeq );
 
@@ -914,7 +920,7 @@ public class ComplianceService {
                 + "join MW_ADT_ISU isu on isu.ISU_ID = fnding.ISSUE_KEY AND isu.CRNT_REC_FLG = 1\r\n"
                 + "join MW_ADT_SB_CTGRY sctg on sctg.ADT_CTGRY_SEQ = isu.ADT_ISU_SEQ AND sctg.CRNT_REC_FLG = 1\r\n"
                 + "join MW_ADT_CTGRY ctg on ctg.ADT_CTGRY_SEQ = sctg.ADT_CTGRY_SEQ AND ctg.CRNT_REC_FLG = 1 AND ctg.CTGRY_ENTY_FLG =2\r\n"
-                + "where fnding.CRNT_REC_FLG = 1 and fnding.ADT_VST_SEQ=123\r\n" + "group by ctg.ADT_CTGRY_SEQ\r\n" + "order by 1 " )
+                + "where fnding.CRNT_REC_FLG = 1 and fnding.ADT_VST_SEQ=:vstSeq\r\n" + "group by ctg.ADT_CTGRY_SEQ\r\n" + "order by 1 " )
                 .setParameter( "vstSeq", vstSeq );
 
         List< Object[] > ob = res.getResultList();
